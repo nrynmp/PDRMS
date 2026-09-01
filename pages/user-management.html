@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>User Management | PRDMS</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<script src="../js/cloud.js"></script><script src="../js/auth.js"></script>
+
+<header class="page-topbar no-print">
+    <a href="../index.html"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a>
+    <div class="module-title">USER MANAGEMENT</div>
+    <div class="page-user">
+        <i class="bi bi-person-circle"></i>
+        <strong data-user-name>User</strong>
+        <button type="button" onclick="PRDMSAuth.logout()" title="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+        </button>
+    </div>
+</header>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="mb-1">Users & Access</h3>
+            <div class="text-muted">Admin can create, edit, reset passwords and remove users.</div>
+        </div>
+        <button type="button" id="addUserBtn" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i>Add User
+        </button>
+    </div>
+
+    <div id="userMessage"></div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>User Name</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                        <th>Last Updated</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="userForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">Add User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="originalUserId">
+
+                    <label class="form-label fw-bold">User ID</label>
+                    <input id="userId" class="form-control mb-3" required autocomplete="off">
+
+                    <label class="form-label fw-bold">User Name</label>
+                    <input id="userName" class="form-control mb-3" required>
+
+                    <label class="form-label fw-bold">
+                        Password <small class="text-muted" id="passwordHint">(required)</small>
+                    </label>
+                    <input id="userPassword" type="password" class="form-control mb-3">
+
+                    <label class="form-label fw-bold">Role</label>
+                    <select id="userRole" class="form-select">
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function () {
+    if (!window.PRDMSAuth || !PRDMSAuth.requireAdmin()) return;
+
+    let modalInstance = null;
+
+    function esc(v) {
+        return String(v || "").replace(/[&<>"']/g, m => ({
+            "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+        }[m]));
+    }
+
+    function fmt(v) {
+        return v ? new Date(v).toLocaleString("en-IN") : "—";
+    }
+
+    function showMessage(text, type) {
+        document.getElementById("userMessage").innerHTML =
+            '<div class="alert alert-' + (type || "success") + '">' + esc(text) + '</div>';
+    }
+
+    function renderUsers() {
+        const body = document.getElementById("userTableBody");
+        const list = PRDMSAuth.users();
+
+        if (!list.length) {
+            body.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">No users found.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = list.map((u, index) => `
+            <tr>
+                <td><strong>${esc(u.id)}</strong></td>
+                <td>${esc(u.name)}</td>
+                <td>
+                    <span class="badge ${u.role === "Admin" ? "text-bg-primary" : "text-bg-secondary"}">
+                        ${esc(u.role)}
+                    </span>
+                </td>
+                <td>${fmt(u.createdAt)}</td>
+                <td>${fmt(u.updatedAt)}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-primary me-1 edit-user-btn" data-index="${index}">
+                        Edit
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger delete-user-btn" data-index="${index}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+
+        body.querySelectorAll(".edit-user-btn").forEach(btn => {
+            btn.addEventListener("click", () => editUser(Number(btn.dataset.index)));
+        });
+
+        body.querySelectorAll(".delete-user-btn").forEach(btn => {
+            btn.addEventListener("click", () => removeUser(Number(btn.dataset.index)));
+        });
+    }
+
+    function openAddUser() {
+        const form = document.getElementById("userForm");
+        form.reset();
+        document.getElementById("originalUserId").value = "";
+        document.getElementById("userModalTitle").textContent = "Add User";
+        document.getElementById("passwordHint").textContent = "(required)";
+        document.getElementById("userPassword").required = true;
+        modalInstance.show();
+    }
+
+    function editUser(index) {
+        const u = PRDMSAuth.users()[index];
+        if (!u) return;
+
+        document.getElementById("originalUserId").value = u.id;
+        document.getElementById("userId").value = u.id;
+        document.getElementById("userName").value = u.name || "";
+        document.getElementById("userPassword").value = "";
+        document.getElementById("userPassword").required = false;
+        document.getElementById("passwordHint").textContent = "(leave blank to keep current password)";
+        document.getElementById("userRole").value = u.role || "User";
+        document.getElementById("userModalTitle").textContent = "Edit User";
+        modalInstance.show();
+    }
+
+    function removeUser(index) {
+        const u = PRDMSAuth.users()[index];
+        if (!u) return;
+
+        if (!confirm("Delete user " + u.id + "?")) return;
+
+        const result = PRDMSAuth.deleteUser(u.id);
+        showMessage(result.ok ? "User deleted successfully." : result.message, result.ok ? "success" : "danger");
+        renderUsers();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalEl = document.getElementById("userModal");
+        modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        document.getElementById("addUserBtn").addEventListener("click", openAddUser);
+
+        document.getElementById("userForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const originalId = document.getElementById("originalUserId").value;
+            const data = {
+                id: document.getElementById("userId").value.trim(),
+                name: document.getElementById("userName").value.trim(),
+                password: document.getElementById("userPassword").value,
+                role: document.getElementById("userRole").value
+            };
+
+            const result = originalId
+                ? PRDMSAuth.updateUser(originalId, data)
+                : PRDMSAuth.createUser(data);
+
+            if (!result.ok) {
+                showMessage(result.message, "danger");
+                return;
+            }
+
+            modalInstance.hide();
+            showMessage(originalId ? "User updated successfully." : "User added successfully.", "success");
+            renderUsers();
+        });
+
+        renderUsers();
+    });
+})();
+</script>
+</body>
+</html>

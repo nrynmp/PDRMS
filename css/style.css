@@ -1,0 +1,2367 @@
+/* ===========================================
+   PRDMS Version 0.1
+   South Eastern Railway
+=========================================== */
+
+body{
+    background:#eef3f8;
+    font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+}
+
+/* Navbar */
+
+.navbar{
+    height:70px;
+}
+
+.navbar-brand{
+    font-size:28px;
+    font-weight:bold;
+}
+
+/* Title */
+
+h1{
+    color:#0d6efd;
+}
+
+h2{
+    color:#1f2937;
+}
+
+
+/* Home Cards */
+
+.home-card{
+
+    border:none;
+
+    border-radius:18px;
+
+    transition:0.35s;
+
+    cursor:pointer;
+
+    min-height:330px;
+
+}
+
+.home-card:hover{
+
+    transform:translateY(-10px);
+
+    box-shadow:0px 15px 35px rgba(0,0,0,.25);
+
+}
+
+.card-body{
+
+    padding:35px;
+
+}
+
+.card i{
+
+    margin-bottom:20px;
+
+}
+
+.card h3{
+
+    font-weight:700;
+
+    margin-bottom:15px;
+
+}
+
+.card p{
+
+    color:#666;
+
+    min-height:60px;
+
+}
+
+/* Buttons */
+
+.btn{
+
+    width:160px;
+
+    border-radius:25px;
+
+    font-weight:bold;
+
+}
+
+/* Footer */
+
+footer{
+
+    font-size:15px;
+
+}
+
+/* ===============================
+   Repair Columns Modal
+   =============================== */
+
+#repairColumnModal {
+    z-index: 2000 !important;
+}
+
+#repairColumnModal .modal-dialog {
+    z-index: 2001 !important;
+}
+
+#repairModalBackdrop {
+    z-index: 1999 !important;
+}
+
+/* =================================
+   PRDMS Repair Columns Popup
+   ================================= */
+
+.repair-columns-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: none;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 40px 20px;
+    overflow-y: auto;
+}
+
+.repair-columns-dialog {
+    width: 900px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.repair-columns-content {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+/* =========================================
+   PRDMS Damage Report Table
+   Railway Format
+   ========================================= */
+
+#wagonTableHeader th {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 700;
+    border: 1px solid #000;
+}
+
+#yardRepairHeader {
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+#repairColumnHeaderRow th {
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-weight: 700 !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.05 !important;
+    padding: 2px 3px !important;
+    min-width: 0 !important;
+    font-family: "Times New Roman", serif !important;
+}
+
+#wagonTableBody td {
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #000;
+}
+
+/* =========================================
+   PRDMS Print Format
+   Hide Action column while printing
+   ========================================= */
+
+@media print {
+
+    #wagonTableHeader th:last-child {
+        display: none !important;
+    }
+
+    #wagonTableBody td:last-child {
+        display: none !important;
+    }
+
+}
+
+/* =========================================
+   PRDMS OFFICIAL REPORT - A4 PRINT SETUP
+   ========================================= */
+
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-family: "Times New Roman", serif !important;
+        font-size: 10pt !important;
+        background: white !important;
+    }
+
+    .navbar,
+    button,
+    .btn,
+    .modal,
+    .repair-columns-popup {
+        display: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+}
+
+/* =========================================
+   PRDMS PRINT - TOP REPORT SECTION
+   ========================================= */
+
+@media print {
+
+    /* Report title */
+    .container.mt-4 h5 {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        margin: 4mm 0 2mm 0 !important;
+    }
+
+    /* Remove excessive spacing */
+    .container,
+    .row {
+        margin-top: 0 !important;
+        margin-bottom: 2mm !important;
+    }
+
+    /* Labels */
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    label {
+        font-weight: bold !important;
+        font-size: 9pt !important;
+    }
+
+    /* Input fields in printed report */
+    input,
+    textarea,
+    select {
+        border: none !important;
+        border-bottom: 1px solid #000 !important;
+        border-radius: 0 !important;
+        padding: 1px 2px !important;
+        height: auto !important;
+        min-height: 18px !important;
+        font-size: 9pt !important;
+        background: white !important;
+    }
+
+    textarea {
+        resize: none !important;
+    }
+
+    /* Hide horizontal rules that create unnecessary gaps */
+    hr {
+        margin: 2mm 0 !important;
+    }
+
+}
+
+/* =========================================
+   PRDMS PRINT - COMPACT PARTICULARS
+   ========================================= */
+
+@media print {
+
+    /* Reduce overall vertical spacing */
+    .container {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .container.mt-4 {
+        margin-top: 0 !important;
+        margin-bottom: 2mm !important;
+    }
+
+    .container.mt-4 h5 {
+        margin: 0 0 2mm 0 !important;
+        font-size: 14pt !important;
+    }
+
+    /* Compact rows */
+    .row {
+        margin-bottom: 1mm !important;
+    }
+
+    /* Compact labels */
+    label {
+        font-size: 8.5pt !important;
+        margin-bottom: 0 !important;
+        line-height: 1 !important;
+    }
+
+    /* Compact input fields */
+    input,
+    textarea,
+    select {
+        font-size: 8.5pt !important;
+        padding: 1px 2px !important;
+        margin: 0 !important;
+        min-height: 14px !important;
+        height: 18px !important;
+        line-height: 1 !important;
+    }
+
+    textarea {
+        height: 25px !important;
+        min-height: 25px !important;
+    }
+
+    /* Reduce horizontal separators */
+    hr {
+        margin: 1mm 0 !important;
+    }
+
+    /* Examination statement */
+    .table-responsive {
+        margin-top: 1mm !important;
+    }
+}
+
+/* =========================================
+   PRDMS PRINT - TWO COLUMN PARTICULARS
+   ========================================= */
+
+@media print {
+
+    /* Keep the main form compact */
+    #reportForm {
+        display: block !important;
+    }
+
+    /* Put the fields into a compact print layout */
+    #reportForm .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #reportForm .row > [class*="col-"] {
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+        margin-bottom: 2mm !important;
+    }
+
+    /* Compact labels */
+    #reportForm label {
+        font-size: 8.5pt !important;
+        margin-bottom: 1px !important;
+    }
+
+    /* Compact printed values */
+    #reportForm input,
+    #reportForm textarea,
+    #reportForm select {
+        font-size: 8.5pt !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        padding: 1px 3px !important;
+        border: none !important;
+        border-bottom: 1px solid #000 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Damage occurrence gets a little more width/height */
+    #damageOccurrence {
+        height: 18px !important;
+    }
+
+}
+
+/* =========================================
+   PRINT-ONLY DAMAGE REPORT PARTICULARS
+   ========================================= */
+
+/* Hidden on normal website */
+#printDamageParticulars {
+    display: none;
+}
+
+
+/* Visible only during printing */
+@media print {
+
+    #printDamageParticulars {
+        display: block !important;
+        font-family: "Times New Roman", serif !important;
+        color: #000 !important;
+        width: 100% !important;
+        margin: 0 0 4mm 0 !important;
+    }
+
+    .print-particulars-title {
+        text-align: center;
+        font-size: 14pt;
+        font-weight: bold;
+        margin-bottom: 3mm;
+    }
+
+    .print-particulars-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        border: 1px solid #000;
+    }
+
+    .print-particulars-left,
+    .print-particulars-right {
+        padding: 0;
+    }
+
+    .print-particulars-left {
+        border-right: 1px solid #000;
+    }
+
+    .print-particulars-left > div,
+    .print-particulars-right > div {
+        display: grid;
+        grid-template-columns: 42% 58%;
+        min-height: 7mm;
+        border-bottom: 1px solid #000;
+        align-items: center;
+    }
+
+    .print-particulars-left > div:last-child,
+    .print-particulars-right > div:last-child {
+        border-bottom: none;
+    }
+
+    .print-particulars-left strong,
+    .print-particulars-right strong {
+        padding: 1mm 2mm;
+        font-size: 8.5pt;
+        font-weight: bold;
+    }
+
+    .print-particulars-left span,
+    .print-particulars-right span {
+        padding: 1mm 2mm;
+        font-size: 8.5pt;
+        min-height: 5mm;
+        border-bottom: 1px solid #000;
+    }
+
+}
+
+/* =========================================
+   PRINT - HIDE ORIGINAL PARTICULARS
+   ========================================= */
+
+@media print {
+
+    /* Hide the original form fields during printing */
+    #reportForm > .row {
+        display: none !important;
+    }
+
+    /* Keep our new print-only particulars */
+    #printDamageParticulars {
+        display: block !important;
+    }
+
+}
+
+/* =========================================
+   PRINT - HIDE OLD PARTICULAR FIELDS
+   ========================================= */
+
+@media print {
+
+    .print-original-field {
+        display: none !important;
+    }
+
+    .print-original-exam,
+    #examinedBy {
+        display: none !important;
+    }
+
+}
+
+/* =========================================
+   DAMAGE REPORT PRINT TITLE
+   ========================================= */
+
+@media print {
+
+    .print-report-title {
+        margin-top: 0 !important;
+        margin-bottom: 3mm !important;
+        padding: 0 !important;
+    }
+
+    .print-report-title h5 {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-family: "Times New Roman", serif !important;
+        font-size: 15pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+    }
+
+    .print-title-line {
+        display: block !important;
+        margin: 2mm 0 3mm 0 !important;
+        border: 0 !important;
+        border-top: 1px solid #000 !important;
+        opacity: 1 !important;
+    }
+
+}
+
+/* Hide old form separator in printed report */
+
+@media print {
+
+    .print-form-separator {
+        display: none !important;
+    }
+
+}
+
+/* =========================================
+   DAMAGE REPORT HEADING - ONE LINE
+   ========================================= */
+
+#printReportHeading {
+    text-align: center !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    font-size: 15pt;
+    line-height: 1.2;
+}
+
+/* =========================================
+   FINAL PDRMS PRINT HEADING
+   ========================================= */
+
+@media print {
+
+    .print-report-title {
+        width: 100% !important;
+        margin: 0 auto 3mm auto !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    #printReportHeading {
+
+        width: 100% !important;
+
+        margin: 0 auto !important;
+        padding: 0 !important;
+
+        text-align: center !important;
+
+        white-space: nowrap !important;
+        overflow: visible !important;
+
+        font-family: "Times New Roman", serif !important;
+        font-weight: bold !important;
+
+        /* JS will reduce this when necessary */
+        font-size: 15pt !important;
+
+        line-height: 1.15 !important;
+
+        box-sizing: border-box !important;
+    }
+
+}
+
+/* =========================================
+   WAGON TABLE - HIDE ACTION WHEN PRINTING
+   ========================================= */
+
+@media print {
+
+    .print-action-column {
+        display: none !important;
+    }
+
+}
+
+/* =========================================
+   PRDMS WAGON TABLE - A4 PORTRAIT
+   EXACT PRINT WIDTH CONTROL
+   ========================================= */
+
+@media print {
+
+    /* A4 usable width with 8mm margins */
+    #wagonTableHeader,
+    #wagonTableBody {
+        width: 190mm !important;
+    }
+
+    .table-responsive {
+        width: 190mm !important;
+        max-width: 190mm !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #wagonTableHeader {
+        table-layout: fixed !important;
+        width: 190mm !important;
+        max-width: 190mm !important;
+        border-collapse: collapse !important;
+    }
+
+    #wagonTableHeader th,
+    #wagonTableBody td {
+        box-sizing: border-box !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        padding: 1.2mm !important;
+        font-family: "Times New Roman", serif !important;
+        border: 1px solid #000 !important;
+        vertical-align: middle !important;
+        text-align: center !important;
+    }
+
+
+    /* =====================================
+       MAIN FIXED COLUMNS
+       ===================================== */
+
+    /* Sl. No */
+    #wagonTableHeader th:nth-child(1),
+    #wagonTableBody td:nth-child(1) {
+        width: 8mm !important;
+        min-width: 8mm !important;
+        max-width: 8mm !important;
+    }
+
+    /* O/Rly */
+    #wagonTableHeader th:nth-child(2),
+    #wagonTableBody td:nth-child(2) {
+        width: 10mm !important;
+        min-width: 10mm !important;
+        max-width: 10mm !important;
+    }
+
+    /* Wagon No */
+    #wagonTableHeader th:nth-child(3),
+    #wagonTableBody td:nth-child(3) {
+        width: 18mm !important;
+        min-width: 18mm !important;
+        max-width: 18mm !important;
+    }
+
+    /* Type */
+    #wagonTableHeader th:nth-child(4),
+    #wagonTableBody td:nth-child(4) {
+        width: 10mm !important;
+        min-width: 10mm !important;
+        max-width: 10mm !important;
+    }
+
+    /* Incoming Damages */
+    #wagonTableHeader th:nth-child(5),
+    #wagonTableBody td:nth-child(5) {
+        width: 50mm !important;
+        min-width: 50mm !important;
+        max-width: 50mm !important;
+    }
+
+    /* Remarks */
+    #wagonTableHeader th:nth-child(6),
+    #wagonTableBody td:nth-child(6) {
+        width: 14mm !important;
+        min-width: 14mm !important;
+        max-width: 14mm !important;
+    }
+
+
+    /* =====================================
+       YARD REPAIR COLUMNS
+       ===================================== */
+
+    #repairColumnHeaderRow th,
+    #wagonTableBody td:nth-child(n+7) {
+        width: 13.3mm !important;
+        min-width: 13.3mm !important;
+        max-width: 13.3mm !important;
+
+        font-size: 6.5pt !important;
+        line-height: 1.05 !important;
+        padding: 1mm !important;
+    }
+
+
+    /* Yard Repair Particulars title */
+    #yardRepairHeader {
+        font-size: 8pt !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+
+    /* =====================================
+       ACTION COLUMN - NEVER PRINT
+       ===================================== */
+
+    #wagonTableHeader th:last-child,
+    #wagonTableBody td:last-child {
+        display: none !important;
+    }
+
+}
+
+/* =========================================
+   WAGON TABLE - AUTO FIT TEXT IN ONE ROW
+   ========================================= */
+
+@media print {
+
+    #wagonTableBody td {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+    }
+
+    /* Main wagon information */
+    #wagonTableBody td:nth-child(1),
+    #wagonTableBody td:nth-child(2),
+    #wagonTableBody td:nth-child(3),
+    #wagonTableBody td:nth-child(4),
+    #wagonTableBody td:nth-child(6) {
+        white-space: nowrap !important;
+        font-size: 8pt !important;
+    }
+
+    /* Repair values */
+    #wagonTableBody td:nth-child(n+7) {
+        white-space: nowrap !important;
+        font-size: 6.5pt !important;
+    }
+
+}
+
+/* =========================================
+   PRINT SIGNATURE SECTION
+   ========================================= */
+
+#printSignatureSection {
+    display: none;
+}
+
+@media print {
+
+    #printSignatureSection {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 12mm !important;
+        font-family: "Times New Roman", serif !important;
+        font-size: 10pt !important;
+    }
+
+    .signature-row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        width: 100% !important;
+    }
+
+    .signature-box {
+        display: block !important;
+        width: 33.33% !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    #printRepresentative {
+        white-space: nowrap !important;
+    }
+
+}
+
+/* PRINT SIGNATURES */
+
+#printSignatureSection {
+    display: none;
+}
+
+@media print {
+
+    #printSignatureSection {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 25mm !important;
+    }
+
+    #printSignatureSection .signature-row {
+        display: flex !important;
+        width: 100% !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+
+    #printSignatureSection .signature-box {
+    width: 33.33% !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    font-family: "Times New Roman", serif !important;
+    font-size: 12pt !important;
+    font-weight: bold !important;
+}
+}
+
+/* Printed particulars - row separators */
+
+@media print {
+
+    #printDamageParticulars .print-particulars-left > div,
+    #printDamageParticulars .print-particulars-right > div {
+        border-bottom: 1px solid #000 !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div:last-child,
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        border-bottom: none !important;
+    }
+
+    #printDamageParticulars .print-particulars-left span,
+    #printDamageParticulars .print-particulars-right span {
+        border-bottom: none !important;
+    }
+
+}
+
+/* =========================================
+   PRINT PARTICULARS - TWO SEPARATE TABLES
+   WITH GAP
+   ========================================= */
+
+@media print {
+
+    #printDamageParticulars .print-particulars-grid {
+        display: grid !important;
+
+        grid-template-columns: calc(50% - 2.5mm) calc(50% - 2.5mm) !important;
+
+        column-gap: 5mm !important;
+
+        width: 100% !important;
+        border: none !important;
+    }
+
+    #printDamageParticulars .print-particulars-left,
+    #printDamageParticulars .print-particulars-right {
+        border: 1px solid #000 !important;
+        padding: 0 !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div,
+    #printDamageParticulars .print-particulars-right > div {
+        display: grid !important;
+        grid-template-columns: 42% 58% !important;
+
+        min-height: 7mm !important;
+
+        border-bottom: 1px solid #000 !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div:last-child,
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        border-bottom: none !important;
+    }
+
+    #printDamageParticulars .print-particulars-left strong,
+    #printDamageParticulars .print-particulars-right strong {
+        border-right: 1px solid #000 !important;
+        padding: 1mm 2mm !important;
+        font-size: 8.5pt !important;
+    }
+
+    #printDamageParticulars .print-particulars-left span,
+    #printDamageParticulars .print-particulars-right span {
+        border-bottom: none !important;
+        padding: 1mm 2mm !important;
+        font-size: 8.5pt !important;
+    }
+
+}
+
+/* =========================================
+   #4 - WAGON TYPE TEXT STAYS INSIDE CELL
+   ========================================= */
+
+#wagonTableHeader th:nth-child(4),
+#wagonTableBody td:nth-child(4) {
+
+    width: 70px !important;
+    max-width: 70px !important;
+
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* 
+    /* -----------------------------
+       ALL YARD REPAIR COLUMNS
+       EQUAL WIDTH
+       ----------------------------- */
+
+    #wagonTable th:nth-child(n+7):not(:last-child),
+    #wagonTable td:nth-child(n+7):not(:last-child) {
+        width: 7.75% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+    }
+
+    /* -----------------------------
+       HEADER TEXT
+       ----------------------------- */
+
+    #wagonTable th {
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+
+        vertical-align: middle !important;
+        text-align: center !important;
+
+        line-height: 1.05 !important;
+        padding: 2px 2px !important;
+
+        font-size: 7pt !important;
+    }
+
+    /* Yard repair headings */
+    #wagonTable th:nth-child(n+7) {
+        font-size: 6.8pt !important;
+        line-height: 1.05 !important;
+    }
+
+    /* -----------------------------
+       WAGON DATA ROWS
+       AUTO HEIGHT
+       ----------------------------- */
+
+    #wagonTable tbody tr {
+        height: auto !important;
+    }
+
+    #wagonTable tbody td {
+        height: auto !important;
+        min-height: 0 !important;
+
+        white-space: normal !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+
+        vertical-align: middle !important;
+        text-align: center !important;
+
+        padding: 2px 2px !important;
+
+        line-height: 1.1 !important;
+    }
+
+    /* Incoming damage text can expand the row */
+    #wagonTable tbody td:nth-child(5) {
+        text-align: left !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    /* Type text stays inside its cell */
+    #wagonTable tbody td:nth-child(4) {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    /* Repair quantities remain compact */
+    #wagonTable tbody td:nth-child(n+7) {
+        font-size: 6.8pt !important;
+        padding: 2px 1px !important;
+    }
+
+    /* TOTAL row */
+    #wagonTotalRow td {
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 2px !important;
+        font-size: 7pt !important;
+        vertical-align: middle !important;
+    }
+
+
+
+
+    /* =====================================
+       MAIN COLUMNS
+       ===================================== */
+
+    /* Sl. No. */
+    .table-responsive > table th:nth-child(1),
+    .table-responsive > table td:nth-child(1) {
+        width: 4.5% !important;
+    }
+
+    /* O/Rly - increased */
+    .table-responsive > table th:nth-child(2),
+    .table-responsive > table td:nth-child(2) {
+        width: 7% !important;
+        font-size: 8pt !important;
+        font-weight: bold !important;
+    }
+
+    /* Wagon No. */
+    .table-responsive > table th:nth-child(3),
+    .table-responsive > table td:nth-child(3) {
+        width: 8% !important;
+    }
+
+    /* Type - increased */
+    .table-responsive > table th:nth-child(4),
+    .table-responsive > table td:nth-child(4) {
+        width: 8.5% !important;
+    }
+
+    /* Incoming Damages */
+    .table-responsive > table th:nth-child(5),
+    .table-responsive > table td:nth-child(5) {
+        width: 20% !important;
+        min-width: 0 !important;
+    }
+
+    /* Remarks */
+    .table-responsive > table th:nth-child(6),
+    .table-responsive > table td:nth-child(6) {
+        width: 6% !important;
+    }
+
+
+    /* =====================================
+       YARD REPAIR SECTION
+       ===================================== */
+
+    /* Heading spanning all repair columns */
+    #yardRepairHeader {
+        width: 46% !important;
+        min-width: 0 !important;
+
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    /* Six repair headings */
+    #repairColumnHeaderRow th {
+        width: 7.666% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+
+        padding: 2px 2px !important;
+
+        font-size: 6.8pt !important;
+        line-height: 1.05 !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    /* Six repair data columns */
+    #wagonTableBody td:nth-child(n+7) {
+        width: 7.666% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+
+        padding: 2px 1px !important;
+
+        font-size: 7pt !important;
+        line-height: 1.1 !important;
+
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+
+    /* =====================================
+       WAGON ROWS - AUTO HEIGHT
+       ===================================== */
+
+    #wagonTableBody tr {
+        height: auto !important;
+    }
+
+    #wagonTableBody td {
+        height: auto !important;
+        min-height: 0 !important;
+
+        padding: 2px !important;
+
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+
+        vertical-align: middle !important;
+    }
+
+    /* Type text */
+    #wagonTableBody td:nth-child(4) {
+        text-align: center !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    /* Incoming damage can expand naturally */
+    #wagonTableBody td:nth-child(5) {
+        text-align: left !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    /* Remarks */
+    #wagonTableBody td:nth-child(6) {
+        text-align: center !important;
+    }
+
+
+    /* =====================================
+       TOTAL ROW
+       ===================================== */
+
+    #wagonTotalRow td {
+        height: auto !important;
+        min-height: 0 !important;
+
+        padding: 2px !important;
+
+        font-size: 7pt !important;
+        line-height: 1.1 !important;
+
+        vertical-align: middle !important;
+    }
+
+
+
+@media print {
+
+    /* Keep Incoming Damages COLUMN width fixed */
+    .table-responsive > table th:nth-child(5),
+    .table-responsive > table td:nth-child(5) {
+        width: 20% !important;
+        min-width: 20% !important;
+        max-width: 20% !important;
+
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+
+        height: auto !important;
+        vertical-align: middle !important;
+    }
+
+    /* ONLY the ROW height should adjust to content */
+    #wagonTableBody tr {
+        height: auto !important;
+    }
+
+    #wagonTableBody td {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+}
+
+/* =========================================
+   FINAL WAGON TABLE PRINT FORMAT
+   FIXED COLUMNS - AUTO ROW HEIGHT
+   ========================================= */
+
+@media print {
+
+    .table-responsive {
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    .table-responsive > table {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+    }
+
+    /* ===============================
+       FIXED MAIN COLUMNS
+       =============================== */
+
+    /* Sl. No. */
+    .table-responsive > table th:nth-child(1),
+    .table-responsive > table td:nth-child(1) {
+        width: 3.5% !important;
+    }
+
+    /* O/Rly */
+    .table-responsive > table th:nth-child(2),
+    .table-responsive > table td:nth-child(2) {
+        width: 5.5% !important;
+    }
+
+    /* Wagon No. */
+    .table-responsive > table th:nth-child(3),
+    .table-responsive > table td:nth-child(3) {
+        width: 7% !important;
+    }
+
+    /* Type */
+    .table-responsive > table th:nth-child(4),
+    .table-responsive > table td:nth-child(4) {
+        width: 7.5% !important;
+    }
+
+    /* Incoming Damages - FIXED */
+    .table-responsive > table th:nth-child(5),
+    .table-responsive > table td:nth-child(5) {
+        width: 20% !important;
+        min-width: 20% !important;
+        max-width: 20% !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+    /* Remarks */
+    .table-responsive > table th:nth-child(6),
+    .table-responsive > table td:nth-child(6) {
+        width: 5.5% !important;
+    }
+
+
+    /* ===============================
+       SIX YARD REPAIR COLUMNS
+       =============================== */
+
+    #repairColumnHeaderRow th,
+    #wagonTableBody td:nth-child(n+7) {
+
+        width: 8.5% !important;
+        min-width: 0 !important;
+        max-width: 8.5% !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+
+    /* ===============================
+       REPAIR HEADINGS
+       =============================== */
+
+    #repairColumnHeaderRow th {
+
+        padding: 2px 2px !important;
+
+        font-size: 6.5pt !important;
+        line-height: 1.05 !important;
+
+        height: auto !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+
+    /* ===============================
+       WAGON ROWS
+       ONLY HEIGHT AUTO
+       =============================== */
+
+    #wagonTableBody tr {
+
+        height: auto !important;
+    }
+
+    #wagonTableBody td {
+
+        height: auto !important;
+        min-height: 0 !important;
+
+        padding: 2px !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        vertical-align: middle !important;
+    }
+
+
+    /* Incoming Damages text */
+    #wagonTableBody td:nth-child(5) {
+
+        width: 20% !important;
+        min-width: 20% !important;
+        max-width: 20% !important;
+
+        text-align: left !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+
+    /* Type */
+    #wagonTableBody td:nth-child(4) {
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+
+        text-align: center !important;
+    }
+
+
+    /* Repair quantities */
+    #wagonTableBody td:nth-child(n+7) {
+
+        font-size: 7pt !important;
+        padding: 2px 1px !important;
+
+        text-align: center !important;
+    }
+
+
+    /* TOTAL row */
+    #wagonTotalRow td {
+
+        height: auto !important;
+        min-height: 0 !important;
+
+        padding: 2px !important;
+    }
+
+}
+
+/* =========================================
+   WEBPAGE WAGON TABLE - CLEAN COMPACT VIEW
+   PRINT VIEW IS NOT AFFECTED
+   ========================================= */
+
+@media screen {
+
+    .table-responsive > table {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+    }
+
+    /* -----------------------------
+       MAIN COLUMNS
+       ----------------------------- */
+
+    /* Sl. No. */
+    .table-responsive > table th:nth-child(1),
+    .table-responsive > table td:nth-child(1) {
+        width: 3.5% !important;
+    }
+
+    /* O/Rly */
+    .table-responsive > table th:nth-child(2),
+    .table-responsive > table td:nth-child(2) {
+        width: 6% !important;
+        white-space: normal !important;
+    }
+
+    /* Wagon No. */
+    .table-responsive > table th:nth-child(3),
+    .table-responsive > table td:nth-child(3) {
+        width: 7% !important;
+        white-space: normal !important;
+    }
+
+    /* Type */
+    .table-responsive > table th:nth-child(4),
+    .table-responsive > table td:nth-child(4) {
+        width: 7.5% !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    /* Incoming Damages - KEEP GENEROUS SPACE */
+    .table-responsive > table th:nth-child(5),
+    .table-responsive > table td:nth-child(5) {
+        width: 20% !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: break-word !important;
+    }
+
+    /* Remarks */
+    .table-responsive > table th:nth-child(6),
+    .table-responsive > table td:nth-child(6) {
+        width: 5.5% !important;
+        white-space: normal !important;
+    }
+
+
+    /* -----------------------------
+       YARD REPAIR COLUMNS
+       ALL SAME WIDTH
+       ----------------------------- */
+
+    #repairColumnHeaderRow th,
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+
+        width: 7.5% !important;
+        min-width: 0 !important;
+        max-width: 7.5% !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+
+    /* -----------------------------
+       REPAIR HEADINGS
+       ----------------------------- */
+
+    #repairColumnHeaderRow th {
+
+        padding: 5px 3px !important;
+
+        font-size: 10px !important;
+        line-height: 1.15 !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+
+    /* -----------------------------
+       WAGON DATA
+       ----------------------------- */
+
+    #wagonTableBody td {
+
+        padding: 5px 3px !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+
+        vertical-align: middle !important;
+    }
+
+
+    /* Type */
+    #wagonTableBody td:nth-child(4) {
+
+        text-align: center !important;
+
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+
+    /* Incoming Damages */
+    #wagonTableBody td:nth-child(5) {
+
+        text-align: left !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+
+    /* Repair quantities */
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+
+        font-size: 12px !important;
+
+        text-align: center !important;
+
+        white-space: normal !important;
+    }
+
+
+    /* -----------------------------
+       ACTION COLUMN
+       ----------------------------- */
+
+    .table-responsive > table th:last-child,
+    .table-responsive > table td:last-child {
+
+        width: 6% !important;
+        min-width: 65px !important;
+
+        white-space: nowrap !important;
+
+        text-align: center !important;
+    }
+
+}
+
+/* =========================================
+   FINAL PRINT PARTICULARS BALANCE
+   ========================================= */
+
+@media print {
+
+    .print-particulars-grid {
+        grid-template-columns: 1fr 1fr !important;
+        column-gap: 5mm !important;
+        border: none !important;
+    }
+
+    .print-particulars-left,
+    .print-particulars-right {
+        border: 1px solid #000 !important;
+    }
+
+    .print-particulars-left {
+        border-right: 1px solid #000 !important;
+    }
+
+    .print-particulars-left > div,
+    .print-particulars-right > div {
+        grid-template-columns: 47% 53% !important;
+
+        min-height: 7mm !important;
+
+        border-bottom: 1px solid #000 !important;
+
+        align-items: center !important;
+    }
+
+    .print-particulars-left > div:last-child,
+    .print-particulars-right > div:last-child {
+        border-bottom: none !important;
+    }
+
+    .print-particulars-left strong,
+    .print-particulars-right strong {
+        padding: 1mm 2mm !important;
+        font-size: 8.5pt !important;
+        line-height: 1.1 !important;
+    }
+
+    .print-particulars-left span,
+    .print-particulars-right span {
+        padding: 1mm 2mm !important;
+        font-size: 8.5pt !important;
+
+        border-bottom: none !important;
+
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+}
+
+/* =========================================
+   FINAL DAMAGE REPORT PARTICULARS
+   MATCH PAINT REFERENCE
+   ========================================= */
+
+@media print {
+
+    #printDamageParticulars .print-particulars-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        column-gap: 5mm !important;
+
+        width: 100% !important;
+        border: none !important;
+    }
+
+    /* Each side is an independent table */
+    #printDamageParticulars .print-particulars-left,
+    #printDamageParticulars .print-particulars-right {
+        border: 1px solid #000 !important;
+        padding: 0 !important;
+    }
+
+    /* Every row */
+    #printDamageParticulars .print-particulars-left > div,
+    #printDamageParticulars .print-particulars-right > div {
+
+        display: grid !important;
+
+        grid-template-columns: 47% 53% !important;
+
+        min-height: 7mm !important;
+
+        border-bottom: 1px solid #000 !important;
+
+        align-items: stretch !important;
+    }
+
+    /* Last row - no internal bottom line */
+    #printDamageParticulars .print-particulars-left > div:last-child,
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        border-bottom: none !important;
+    }
+
+    /* FIELD NAME CELL */
+    #printDamageParticulars .print-particulars-left > div > strong,
+    #printDamageParticulars .print-particulars-right > div > strong {
+
+        display: flex !important;
+
+        align-items: center !important;
+
+        align-self: stretch !important;
+
+        box-sizing: border-box !important;
+
+        padding: 1mm 2mm !important;
+
+        font-size: 8.5pt !important;
+        line-height: 1.1 !important;
+        font-weight: bold !important;
+
+        border-right: 1px solid #000 !important;
+    }
+
+    /* DATA CELL */
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+
+        display: flex !important;
+
+        align-items: center !important;
+
+        padding: 1mm 2mm !important;
+
+        font-size: 8.5pt !important;
+        line-height: 1.1 !important;
+
+        border: none !important;
+
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+}
+
+@media print {
+
+    /* =========================================
+       1. PERFECT CONTINUOUS LABEL/DATA DIVIDER
+       ========================================= */
+
+    #printDamageParticulars
+    .print-particulars-left > div,
+    #printDamageParticulars
+    .print-particulars-right > div {
+        display: grid !important;
+        grid-template-columns: 47% 53% !important;
+        align-items: stretch !important;
+    }
+
+    #printDamageParticulars
+    .print-particulars-left > div > strong,
+    #printDamageParticulars
+    .print-particulars-right > div > strong {
+        display: flex !important;
+
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+
+        margin: 0 !important;
+
+        box-sizing: border-box !important;
+
+        align-items: center !important;
+
+        border-right: 1px solid #000 !important;
+    }
+
+
+    /* =========================================
+       2. ALL YARD REPAIR COLUMNS SAME WIDTH
+       ========================================= */
+
+    #repairColumnHeaderRow th,
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+
+        width: 5.6% !important;
+        min-width: 5.6% !important;
+        max-width: 5.6% !important;
+
+        box-sizing: border-box !important;
+
+        padding: 2px 1px !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+
+        font-size: 6.5pt !important;
+        line-height: 1.05 !important;
+    }
+
+    /* Keep repair headings and data perfectly aligned */
+    #repairColumnHeaderRow th {
+        height: auto !important;
+    }
+
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+        height: auto !important;
+    }
+
+}
+
+@media print {
+
+    /* Keep all Yard Repair TOTAL numbers the same size */
+    #wagonTotalRow td:nth-child(n+7):not(:last-child) {
+        font-size: 7pt !important;
+        font-weight: bold !important;
+        line-height: 1.05 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+}
+
+@media print {
+
+    /* TOTAL row - all Yard Repair numbers identical */
+    #wagonTableBody tr:last-child td:nth-child(n+7):not(:last-child) {
+        font-size: 7pt !important;
+        font-weight: bold !important;
+        line-height: 1.05 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 2px 1px !important;
+    }
+
+}
+
+/* =========================================
+   FINAL PDRMS TOTAL ROW ALIGNMENT
+   ========================================= */
+
+@media print {
+
+    /* TOTAL row */
+    #wagonTableBody tr:last-child td {
+
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        font-family: "Times New Roman", serif !important;
+        font-size: 8pt !important;
+        font-weight: bold !important;
+
+        padding: 2px 1px !important;
+
+        box-sizing: border-box !important;
+    }
+
+    /* All Yard Repair TOTAL values */
+    #wagonTableBody tr:last-child td:nth-child(n+7) {
+
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        display: table-cell !important;
+
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+}
+
+/* =========================================
+   PDRMS FINAL PRINT TABLE ALIGNMENT
+   ========================================= */
+
+@media print {
+
+    .table-responsive {
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .table-responsive table {
+        width: 100% !important;
+        margin: 0 auto !important;
+
+        table-layout: fixed !important;
+
+        border-collapse: collapse !important;
+
+        font-family: "Times New Roman", serif !important;
+    }
+
+    /* Main table cells */
+    #wagonTableHeader th,
+    #wagonTableBody td {
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        border: 1px solid #000 !important;
+
+        padding: 2px 2px !important;
+
+        box-sizing: border-box !important;
+    }
+
+    /* -----------------------------------------
+       Fixed width for main columns
+       ----------------------------------------- */
+
+    #wagonTableHeader th:nth-child(1) {
+        width: 5% !important;
+    }
+
+    #wagonTableHeader th:nth-child(2) {
+        width: 7% !important;
+    }
+
+    #wagonTableHeader th:nth-child(3) {
+        width: 10% !important;
+    }
+
+    #wagonTableHeader th:nth-child(4) {
+        width: 10% !important;
+    }
+
+    #wagonTableHeader th:nth-child(5) {
+        width: 26% !important;
+    }
+
+    #wagonTableHeader th:nth-child(6) {
+        width: 8% !important;
+    }
+
+    /* -----------------------------------------
+       Yard Repair Particulars
+       ----------------------------------------- */
+
+    #yardRepairHeader {
+        width: 34% !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    #repairColumnHeaderRow th {
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        padding: 2px 1px !important;
+
+        line-height: 1.0 !important;
+
+        font-size: 7pt !important;
+
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* -----------------------------------------
+       Wagon data
+       ----------------------------------------- */
+
+    #wagonTableBody td {
+        font-size: 7.5pt !important;
+    }
+
+    /* Incoming damage text */
+    #wagonTableBody td:nth-child(5) {
+        text-align: left !important;
+        vertical-align: middle !important;
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+    }
+
+    /* -----------------------------------------
+       TOTAL ROW
+       ----------------------------------------- */
+
+    #wagonTableBody tr:last-child td {
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        font-weight: bold !important;
+
+        padding: 2px 1px !important;
+    }
+
+    #wagonTableBody tr:last-child td:nth-child(n+7) {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+}
+
+@media print {
+
+    /* =========================================
+       DAMAGE TABLE = SAME WIDTH AS ABOVE TABLES
+       ========================================= */
+
+    .table-responsive {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .table-responsive > table {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+    }
+
+    /* -----------------------------------------
+       MAIN COLUMNS
+       ----------------------------------------- */
+
+    #wagonTableHeader th:nth-child(1) {
+        width: 5% !important;
+    }
+
+    #wagonTableHeader th:nth-child(2) {
+        width: 7% !important;
+    }
+
+    #wagonTableHeader th:nth-child(3) {
+        width: 10% !important;
+    }
+
+    #wagonTableHeader th:nth-child(4) {
+        width: 10% !important;
+    }
+
+    #wagonTableHeader th:nth-child(5) {
+        width: 25% !important;
+    }
+
+    #wagonTableHeader th:nth-child(6) {
+        width: 8% !important;
+    }
+
+    /* -----------------------------------------
+       YARD REPAIR = REMAINING WIDTH
+       ----------------------------------------- */
+
+    #yardRepairHeader {
+        width: 35% !important;
+    }
+
+    /* Current 7 repair columns */
+    #repairColumnHeaderRow th,
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+
+        width: 5% !important;
+        min-width: 0 !important;
+        max-width: 5% !important;
+
+        box-sizing: border-box !important;
+
+        padding: 2px 1px !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+    }
+
+}
+
+/* =========================================
+   #5 - YARD REPAIR COMPLETE BORDERS
+   ========================================= */
+
+@media print {
+
+    /* Yard Repair main heading */
+    #yardRepairHeader {
+        border: 1px solid #000 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Every Yard Repair heading cell */
+    #repairColumnHeaderRow th {
+        border: 1px solid #000 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    /* Every Yard Repair data cell */
+    #wagonTableBody td:nth-child(n+7):not(:last-child) {
+        border: 1px solid #000 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    /* Yard Repair TOTAL cells */
+    #wagonTableBody tr:last-child td:nth-child(n+7):not(:last-child) {
+        border: 1px solid #000 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+}
+
+/* =========================================
+   #5 FINAL - COMPLETE YARD REPAIR GRID
+   ========================================= */
+
+@media print {
+
+    /* The complete wagon table */
+    .table-responsive > table {
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+    }
+
+    /* -----------------------------------------
+       YARD REPAIR MAIN HEADING
+       ----------------------------------------- */
+
+    #yardRepairHeader {
+        border: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+        border-left: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+    }
+
+    /* -----------------------------------------
+       EVERY REPAIR HEADER CELL
+       ----------------------------------------- */
+
+    #repairColumnHeaderRow > th {
+        border: 1px solid #000 !important;
+
+        border-top: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+        border-left: 1px solid #000 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    /* -----------------------------------------
+       EVERY REPAIR DATA CELL
+       ----------------------------------------- */
+
+    #wagonTableBody > tr > td:nth-child(n+7) {
+
+        border: 1px solid #000 !important;
+
+        border-top: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+        border-left: 1px solid #000 !important;
+
+        box-sizing: border-box !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    /* -----------------------------------------
+       TOTAL ROW - REPAIR CELLS
+       ----------------------------------------- */
+
+    #wagonTableBody > tr:last-child > td:nth-child(n+7) {
+
+        border: 1px solid #000 !important;
+
+        border-top: 1px solid #000 !important;
+        border-right: 1px solid #000 !important;
+        border-bottom: 1px solid #000 !important;
+        border-left: 1px solid #000 !important;
+
+        text-align: center !important;
+        vertical-align: middle !important;
+
+        box-sizing: border-box !important;
+    }
+
+}
+
+/* =========================================
+   PRDMS REPORT ACTION BAR
+   ========================================= */
+
+.report-action-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 20px 0 30px 0;
+    border-top: 1px solid #d0d0d0;
+}
+
+.report-action-bar .btn {
+    width: 180px;
+    min-height: 44px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.report-action-bar .btn i {
+    margin-right: 6px;
+}
+
+/* Hide action buttons while printing */
+@media print {
+
+    .report-action-bar {
+        display: none !important;
+    }
+
+}
+
+
+/* =========================================
+   PRDMS - PRINT RIGHT BORDER FINAL FIX
+   ========================================= */
+
+@media print {
+
+    /* TOP PARTICULARS TABLE */
+    #printDamageParticulars .print-particulars-grid {
+        width: calc(100% - 2px) !important;
+        margin-right: 2px !important;
+        box-sizing: border-box !important;
+        border: 1px solid #000 !important;
+    }
+
+    /* MAIN DAMAGE TABLE */
+    #printDamageParticulars + * {
+        box-sizing: border-box !important;
+    }
+
+    .table-responsive {
+        width: calc(100% - 2px) !important;
+        margin-right: 2px !important;
+        overflow: visible !important;
+        box-sizing: border-box !important;
+    }
+
+    .table-responsive > table {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border: 1px solid #000 !important;
+        border-collapse: collapse !important;
+    }
+
+    /* EVERY CELL */
+    .table-responsive th,
+    .table-responsive td {
+        border: 1px solid #000 !important;
+    }
+
+    /* FORCE LAST VISIBLE REPAIR COLUMN EDGE */
+    #repairColumnHeaderRow th:last-child {
+        border-right: 1px solid #000 !important;
+    }
+
+    #wagonTableBody td:nth-last-child(2) {
+        border-right: 1px solid #000 !important;
+    }
+}
+
+/* =========================================
+   WEB PAGE - TOTAL ROW REPAIR ALIGNMENT
+   ========================================= */
+
+#wagonTableBody tr:last-child td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Lock Lifter Handle Repair TOTAL */
+#wagonTableBody tr:last-child td:nth-child(10) {
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* =========================================
+   PANEL / FLOOR FITTED TABLE DISPLAY
+   ========================================= */
+
+.fitted-column {
+    text-align: center;
+    vertical-align: middle;
+    white-space: normal;
+    line-height: 1.15;
+}
+
+.fitted-table-item {
+    margin-bottom: 3px;
+}
+
+.fitted-table-item:last-child {
+    margin-bottom: 0;
+}
+/* PDRMS History workflow */
+.history-action-heading { text-align: center; }
+.history-actions { white-space: nowrap; }
+.history-actions .btn { margin-bottom: 0; }
+
+/* ===== PRDMS PROFESSIONAL UI v0.2 ===== */
+:root{--navy:#12304a;--navy2:#0b2134;--blue:#2563eb;--soft:#f5f8fc;--border:#dce5ef;--text:#172033;--muted:#718096}body{color:var(--text);background:var(--soft)}.app-shell{min-height:100vh;display:flex}.app-sidebar{width:270px;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;position:fixed;inset:0 auto 0 0;padding:22px 14px;z-index:1050;display:flex;flex-direction:column}.sidebar-brand{display:flex;gap:12px;align-items:center;padding:8px 10px 28px;border-bottom:1px solid #ffffff1f;margin-bottom:18px}.brand-icon{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:23px}.sidebar-brand strong{display:block;font-size:20px}.sidebar-brand small{display:block;color:#a8bed0;font-size:11px}.sidebar-label{font-size:10px;letter-spacing:1.2px;color:#87a0b5;font-weight:700;padding:10px 12px}.side-link{border:0;background:transparent;color:#d7e3ed;text-decoration:none;width:100%;display:flex;gap:13px;align-items:center;padding:12px;border-radius:10px;margin:3px 0;font-size:14px;font-weight:600;text-align:left}.side-link:hover,.side-link.active{background:#ffffff1f;color:#fff}.side-link i{font-size:18px;width:20px;text-align:center}.sidebar-bottom{margin-top:auto}.side-logout{color:#ffcece}.app-main{width:calc(100% - 270px);margin-left:270px;min-height:100vh;padding:0 34px}.app-topbar{min-height:88px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:#ffffffcc;margin:0 -34px;padding:0 34px}.page-breadcrumb{font-size:12px;color:var(--muted);margin-bottom:3px}.page-breadcrumb span{color:var(--blue);font-weight:700}.app-topbar h2{font-size:19px;margin:0;color:var(--text)}.user-profile{display:flex;gap:10px;align-items:center}.user-avatar{width:40px;height:40px;border-radius:50%;background:#e8f0ff;color:var(--blue);display:grid;place-items:center}.user-profile strong,.user-profile small{display:block}.user-profile strong{font-size:13px}.user-profile small{font-size:11px;color:var(--muted)}.icon-logout{border:1px solid var(--border);width:36px;height:36px;border-radius:9px;background:#fff;color:#c33;margin-left:8px}.welcome-banner{margin:28px 0 22px;border-radius:18px;padding:28px 34px;min-height:180px;color:#fff;background:linear-gradient(120deg,#173e60,#2563eb);display:flex;justify-content:space-between;align-items:center}.welcome-banner h1{color:#fff;font-size:27px;margin:8px 0}.welcome-banner p{color:#dbeafe;max-width:680px;margin:0}.eyebrow{font-size:10px;letter-spacing:1.3px;font-weight:800;color:var(--blue)}.welcome-banner .eyebrow{color:#bfdbfe}.welcome-train{font-size:82px;opacity:.18}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}.stat-card,.dashboard-panel{background:#fff;border:1px solid var(--border);border-radius:15px;box-shadow:0 8px 24px #12304a0a}.stat-card{padding:19px;display:flex;gap:14px;align-items:center}.stat-card span{display:block;color:var(--muted);font-size:12px}.stat-card strong{display:block;font-size:26px}.stat-icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:20px}.blue{background:#e8f0ff;color:#2563eb}.green{background:#e8f8ef;color:#18834c}.orange{background:#fff4df;color:#b7791f}.purple{background:#f2eaff;color:#7c3aed}.dashboard-grid{display:grid;grid-template-columns:1.65fr 1fr;gap:18px}.dashboard-panel{padding:22px}.panel-heading{margin-bottom:16px}.panel-heading h3,.dashboard-panel h3{font-size:17px;margin:4px 0}.quick-actions{display:grid;gap:10px}.quick-action{display:flex;align-items:center;gap:13px;text-decoration:none;color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px}.quick-action:hover{border-color:#bcd1ff;box-shadow:0 8px 20px #2563eb14}.quick-action-icon{width:40px;height:40px;border-radius:10px;background:#edf3ff;color:var(--blue);display:grid;place-items:center;font-size:18px}.quick-action strong,.quick-action small{display:block}.quick-action small{font-size:11px;color:var(--muted)}.quick-action>i{margin-left:auto;font-size:22px;color:#94a3b8}.system-status{margin-top:18px}.system-status>div{display:grid;grid-template-columns:18px 1fr auto;gap:9px;align-items:center;padding:11px 0;border-bottom:1px solid #edf1f5;font-size:13px}.system-status i{color:#16a34a}.system-status strong{font-size:11px;color:#16a34a;background:#ecfdf3;padding:4px 8px;border-radius:20px}.app-footer{color:#94a3b8;font-size:11px;padding:26px 0;text-align:center}.login-page{min-height:100vh;background:#eaf0f7}.login-shell{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr}.login-brand-panel{background:linear-gradient(145deg,#102d46,#1c5b8f);color:#fff;padding:8vw 10vw;display:flex;flex-direction:column;justify-content:center}.login-railway-mark{width:66px;height:66px;border-radius:18px;background:#fff;color:#173e60;display:grid;place-items:center;font-size:32px;margin-bottom:28px}.login-brand-panel h1{color:#fff;font-size:40px;line-height:1.14;margin:10px 0 16px}.login-brand-panel p{color:#cfe3f6;max-width:560px;line-height:1.7}.login-feature-list{display:grid;gap:12px;margin-top:30px;color:#dbeafe;font-size:14px}.login-feature-list i{color:#8fc5ff;margin-right:9px}.login-card-wrap{display:grid;place-items:center;padding:30px}.login-card{width:min(430px,100%);background:#fff;border:1px solid var(--border);border-radius:20px;padding:38px;box-shadow:0 20px 60px #12304a1f}.login-card-logo{width:52px;height:52px;border-radius:14px;background:#eaf1ff;color:#2563eb;display:grid;place-items:center;font-size:24px;margin-bottom:18px}.login-card-heading h2{font-size:23px;margin:0 0 6px}.login-card-heading p{color:var(--muted);font-size:13px;margin-bottom:26px}.login-card .form-label{font-size:12px;font-weight:700}.login-card .form-control,.login-card .input-group-text{height:46px;border-color:var(--border)}.password-toggle{width:48px!important;border-radius:0 8px 8px 0!important}.login-submit{height:46px!important;border-radius:10px!important;background:linear-gradient(90deg,#1d4ed8,#2563eb)!important;border:0!important;font-weight:700}.login-error{font-size:12px;color:#b42318;background:#fff1f0;border-radius:8px;padding:9px 10px}.login-help{font-size:11px;color:#94a3b8;text-align:center;margin-top:24px}.page-topbar{min-height:74px;background:linear-gradient(90deg,#12304a,#1b5c8f);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:0 3px 14px #12304a1f}.page-topbar a{color:#fff;text-decoration:none;font-weight:700}.module-title{font-size:14px;font-weight:800;letter-spacing:.5px}.page-user{display:flex;align-items:center;gap:8px;font-size:12px}.page-user button{border:1px solid #ffffff40;background:transparent;color:#fff;border-radius:8px;padding:6px 9px}@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.app-sidebar{transform:translateX(-100%)}.app-sidebar.show{transform:translateX(0)}.app-main{width:100%;margin-left:0;padding:0 20px}.app-topbar{padding:0 20px;margin:0 -20px}}@media(max-width:700px){.login-shell{grid-template-columns:1fr}.login-brand-panel{display:none}.login-card-wrap{padding:18px}.login-card{padding:28px 22px}.stats-grid{grid-template-columns:1fr}.welcome-banner{padding:24px}.welcome-banner h1{font-size:22px}.welcome-train{display:none}.app-topbar h2{font-size:15px}.user-profile>div:nth-child(2){display:none}.page-topbar{padding:0 16px}.page-user strong{display:none}}
+
+.stat-icon.teal{background:rgba(13,148,136,.12);color:#0d9488;}
+
+.dashboard-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:22px}
+.chart-panel{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:16px;padding:20px;box-shadow:0 8px 24px rgba(15,23,42,.05)}
+.chart-wide{min-height:340px}
+.chart-wrap{height:290px;position:relative}
+@media(max-width:900px){.dashboard-charts{grid-template-columns:1fr}.chart-wrap{height:260px}}
+
+
+/* Damage History wide workspace */
+.history-page .container {
+    max-width: 1600px !important;
+    width: calc(100% - 48px) !important;
+}
+
+
+/* =========================================
+   TWO EXAMINERS - PRINT FIX
+   ========================================= */
+
+/* The second examiner is an entry field only; never print it. */
+@media print {
+    .second-examiner-entry {
+        display: none !important;
+    }
+
+    #examinedBy2 {
+        display: none !important;
+    }
+
+    #printExaminedBy {
+        white-space: pre-line !important;
+    }
+
+    #printSignatureSection.two-examiners .signature-box {
+        width: 25% !important;
+    }
+}
+
+#printSignatureExaminer2Box {
+    display: none;
+}
+
+/* =====================================================
+   FINAL FIX - OPTIONAL SECOND EXAMINER SIGNATURE
+   ===================================================== */
+@media print {
+    /* Hide second SSE/JE signature unless examiner 2 is entered. */
+    #printSignatureSection #printSignatureExaminer2Box {
+        display: none !important;
+    }
+
+    /* Show the second signature only when two examiners exist. */
+    #printSignatureSection.two-examiners #printSignatureExaminer2Box {
+        display: block !important;
+    }
+}

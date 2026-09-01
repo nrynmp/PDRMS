@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manpower Calculation - PRDMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .mp-table th,.mp-table td{vertical-align:middle}.unrated{background:#fff3cd}
+        .official-print{display:none}
+        @media print{
+            @page{size:A4 landscape;margin:7mm 6mm}
+            html,body{background:#fff!important;color:#000!important;font-family:"Times New Roman",Times,serif!important;margin:0!important;padding:0!important}
+            body{font-size:9px!important}
+            .no-print,.screen-only{display:none!important}
+            .official-print{display:block!important}
+            .container-fluid{padding:0!important;margin:0!important;width:100%!important;max-width:none!important}
+            .official-title{text-align:center;margin:0 0 5mm}
+            .official-title h3{font-size:15px;font-weight:700;margin:0 0 1mm}
+            .official-title .sub{font-size:10px;font-weight:700}
+            .official-meta{display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:5mm;font-size:10px}
+            .official-meta div{padding:0 4mm}.official-meta strong{font-weight:700}
+            .official-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5px}
+            .official-table th,.official-table td{border:1px solid #000;padding:2px 2.5px;text-align:center;vertical-align:middle;line-height:1.08;word-break:break-word;overflow-wrap:anywhere}
+            .official-table thead{display:table-header-group}.official-table tr{page-break-inside:avoid}
+            .official-table th{font-weight:700}
+            .official-table .damage-cell{text-align:left}
+            .official-table th:nth-child(1){width:3.5%}.official-table th:nth-child(2){width:6%}.official-table th:nth-child(3){width:11%}.official-table th:nth-child(4){width:8%}.official-table th:nth-child(5){width:24%}.official-table th:nth-child(n+6){width:auto}.official-table .blank-group-column{font-size:0;padding:0}
+            .official-table .group-row th{font-size:8px}
+            .official-table .item-header th{font-size:7px;min-height:28px}
+            .official-table .official-total-row th,.official-table .official-group-total-row th,.official-table .grand-total-row th{font-weight:700}
+            .official-signatures{display:grid;grid-template-columns:1fr 1fr;margin-top:14mm;font-size:13px;font-weight:800}
+            .official-signatures div:first-child{text-align:left}.official-signatures div:last-child{text-align:right}
+            .official-grand-total-row .final-total-spacer {
+    border: none !important;
+}
+        }
+    </style>
+</head>
+<body>
+<script src="../js/cloud.js"></script><script src="../js/auth.js"></script>
+<header class="page-topbar no-print"><a href="../index.html"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a><div class="module-title">MANPOWER CALCULATION</div><div class="page-user"><i class="bi bi-person-circle"></i><strong data-user-name>User</strong><button type="button" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i></button></div></header>
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+        <div><h3 class="fw-bold mb-1">Manpower Calculation</h3><div class="text-muted">Select a saved train to view manpower. Only <strong>Y/R</strong> wagons are included.</div></div>
+        <div class="d-flex gap-2"><button class="btn btn-secondary" onclick="returnFromManpower()"><i class="bi bi-arrow-left"></i> Back</button></div>
+    </div>
+
+    <div class="card shadow-sm mb-3 no-print" id="trainSelectionCard">
+        <div class="card-body">
+            <label for="manpowerTrainSearch" class="form-label fw-bold"><i class="bi bi-search me-1"></i>Select / Search Train</label>
+            <div class="input-group">
+                <input type="text" id="manpowerTrainSearch" class="form-control" placeholder="Type train number or date to search..." autocomplete="off">
+                <select id="manpowerTrainSelect" class="form-select" style="max-width: 62%;">
+                    <option value="">Select a saved train...</option>
+                </select>
+            </div>
+            <div class="form-text">Manpower details will appear only after you select a train.</div>
+        </div>
+    </div>
+
+    <div id="reportMessage" class="alert alert-info no-print d-none"></div>
+
+    <div id="manpowerResults" class="d-none">
+    <div class="d-flex justify-content-end gap-2 mb-3 no-print">
+        <button class="btn btn-primary" onclick="calculateManpower()"><i class="bi bi-calculator"></i> Calculate</button>
+        <button class="btn btn-outline-secondary" onclick="printManpowerReport()"><i class="bi bi-printer"></i> Print Landscape</button>
+    </div>
+
+    <div class="card shadow-sm mb-3 screen-only no-print">
+        <div class="card-body"><div class="row g-3"><div class="col-md-3"><strong>Train No.</strong><div id="trainNo">—</div></div><div class="col-md-3"><strong>Date</strong><div id="reportDate">—</div></div><div class="col-md-3"><strong>Rake ID</strong><div id="rakeID">—</div></div><div class="col-md-3"><strong>Y/R Wagons</strong><div id="yrCount">0</div></div></div></div>
+    </div>
+
+    <div class="card shadow-sm mb-4 screen-only no-print">
+        <div class="card-header fw-bold">Wagon-wise Manpower</div>
+        <div class="table-responsive"><table class="table table-bordered table-sm mb-0 mp-table"><thead id="wagonManpowerHead"></thead><tbody id="wagonManpowerBody"></tbody><tfoot id="wagonManpowerFoot"></tfoot></table></div>
+    </div>
+
+    <div class="card shadow-sm mb-4 screen-only no-print">
+        <div class="card-header fw-bold">Man-Hours Summary</div>
+        <div class="table-responsive"><table class="table table-bordered table-sm mb-0"><thead><tr><th>Item</th><th>Category</th><th>Quantity</th><th>Man-Hrs / Item</th><th>Total Man-Hrs.</th></tr></thead><tbody id="summaryBody"></tbody><tfoot id="summaryFoot"></tfoot></table></div>
+    </div>
+
+    <div id="unratedBox" class="alert alert-warning d-none no-print"><strong>Items not included in manpower total:</strong> <span id="unratedItems"></span><div class="small mt-1">The current Manpower List does not contain a Changed/Repair man-hour rate for these items, so PDRMS will not invent a rate.</div></div>
+
+    <section class="official-print">
+        <div class="official-title">
+            <h3>WAGON DAMAGE &amp; REPAIR JOINT REPORT (Material) at NRY/NMP</h3>
+        </div>
+        <div class="official-meta">
+            <div><strong>Train No.:</strong> <span id="printRakeNo">—</span></div>
+            <div><strong>Date of Inspection:</strong> <span id="printInspectionDate"></span></div>
+            <div><strong>Date of Repair:</strong> <span id="printRepairDate"></span></div>
+        </div>
+        <table class="official-table" id="officialManpowerTable">
+            <thead id="officialManpowerHead"></thead>
+            <tbody id="officialManpowerBody"></tbody>
+            <tfoot id="officialManpowerFoot"></tfoot>
+        </table>
+        <div class="official-signatures"><div>Signature of Representative</div><div>Signature of SSE(C&amp;W)NMP</div></div>
+    </section>
+    </div>
+</div>
+<script src="../js/manpower-calculation.js"></script>
+<div class="modal fade" id="changePasswordModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form id="changePasswordForm"><div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="changePasswordMsg"></div><label class="form-label">Current Password</label><input id="currentPasswordInput" type="password" class="form-control mb-3" required><label class="form-label">New Password</label><input id="newPasswordInput" type="password" class="form-control" required></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Change Password</button></div></form></div></div></div><script>function openChangePassword(){const m=document.getElementById("changePasswordModal");if(!m)return;bootstrap.Modal.getOrCreateInstance(m).show()}document.addEventListener("DOMContentLoaded",()=>{const f=document.getElementById("changePasswordForm");if(f)f.onsubmit=e=>{e.preventDefault();const r=PRDMSAuth.changeOwnPassword(currentPasswordInput.value,newPasswordInput.value);const box=document.getElementById("changePasswordMsg");if(r.ok){box.innerHTML='<div class="alert alert-success">Password changed successfully.</div>';f.reset();setTimeout(()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("changePasswordModal")).hide(),700)}else box.innerHTML='<div class="alert alert-danger">'+r.message+'</div>'}});</script></body>
+</html>

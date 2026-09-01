@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Damage Report History</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* Damage Report History: professional compact single-row action layout */
+.history-table{width:100%;table-layout:fixed;}
+.history-table th,.history-table td{vertical-align:middle;}
+.history-date-col{width:12% !important;}
+.history-train-col{width:34% !important;}
+.history-wagons-col{width:6% !important;text-align:center;}
+.history-yr-col{width:6% !important;text-align:center;}
+.history-status-col{width:14% !important;text-align:center;}
+.status-select{font-size:.72rem;padding:2px 5px;min-width:105px;}
+.history-action-heading,.history-actions{
+  width:42% !important;
+  min-width:0 !important;
+  text-align:center;
+  white-space:nowrap !important;
+}
+.history-actions{padding:6px 8px !important;overflow:hidden;}
+.history-actions-grid{
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:5px !important;
+  flex-wrap:nowrap !important;
+  width:100%;
+}
+.history-actions .btn{
+  flex:0 0 auto;
+  min-width:50px !important;
+  width:auto !important;
+  height:28px !important;
+  padding:3px 9px !important;
+  margin:0 !important;
+  border-radius:8px !important;
+  font-size:0.72rem !important;
+  font-weight:600;
+  line-height:1 !important;
+  white-space:nowrap;
+}
+.history-actions .btn:nth-child(1){min-width:50px !important;}
+.history-actions .btn:nth-child(2){min-width:48px !important;}
+.history-actions .btn:nth-child(3){min-width:52px !important;}
+.history-actions .btn:last-child{min-width:74px !important;}
+.history-month-section h4{color:#1f3b64}
+.history-view-table th{white-space:nowrap}
+@media (max-width: 992px){
+  .history-table{min-width:760px;table-layout:fixed;}
+  .history-wagons-col,.history-yr-col{min-width:0;}
+}
+
+/* Compact Status + Actions layout fix */
+.history-table{table-layout:fixed;width:100%;}
+.history-date-col{width:7% !important;}
+.history-train-col{width:16% !important;}
+.history-wagons-col{width:8% !important;text-align:center;}
+.history-yr-col{width:7% !important;text-align:center;}
+.history-status-col{width:12% !important;text-align:center;}
+.history-action-heading,.history-actions{width:50% !important;}
+.history-actions-grid{display:flex !important;flex-wrap:nowrap !important;gap:6px !important;justify-content:center !important;align-items:center !important;}
+.history-actions-grid .btn{font-size:.72rem !important;padding:4px 10px !important;min-width:62px !important;white-space:nowrap !important;}
+.status-select{width:100% !important;min-width:0 !important;font-size:.72rem !important;padding:2px 4px !important;}
+.history-status-col .badge{font-size:.68rem !important;}
+
+
+/* ===== Final wide-screen History layout ===== */
+.history-page .container,
+.container:has(#historyList) {
+    max-width: 1600px !important;
+    width: calc(100% - 48px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Search panel: use all available width and keep all controls inside */
+.history-search-row,
+.history-filter-row {
+    display: grid !important;
+    grid-template-columns: 1.35fr 1fr .65fr .65fr auto auto !important;
+    gap: 14px !important;
+    align-items: end !important;
+    width: 100% !important;
+}
+.history-search-row > *,
+.history-filter-row > * {
+    width: auto !important;
+    min-width: 0 !important;
+}
+.history-search-row .btn,
+.history-filter-row .btn {
+    white-space: nowrap !important;
+    min-width: 78px !important;
+}
+
+/* Table uses the full available page width */
+.history-month-section,
+#historyList,
+.history-month-section .table-responsive {
+    width: 100% !important;
+    max-width: none !important;
+}
+.history-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+}
+
+/* Give more room to the useful columns and keep Status compact */
+.history-date-col { width: 7% !important; }
+.history-train-col { width: 20% !important; }
+.history-wagons-col { width: 8% !important; text-align: center !important; }
+.history-yr-col { width: 7% !important; text-align: center !important; }
+.history-status-col { width: 14% !important; text-align: center !important; }
+.history-action-heading,
+.history-actions { width: 44% !important; }
+
+.history-status-col .badge {
+    display: inline-block !important;
+    margin-bottom: 3px !important;
+    font-size: .68rem !important;
+    padding: 3px 7px !important;
+}
+.history-status-col .status-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: .74rem !important;
+    padding: 3px 5px !important;
+}
+
+/* Four action buttons always stay fully inside the Actions column */
+.history-actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    align-items: center !important;
+}
+.history-actions-grid .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 4px 5px !important;
+    font-size: .72rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Mobile fallback */
+@media (max-width: 1100px) {
+    .history-page .container,
+    .container:has(#historyList) { width: calc(100% - 24px) !important; }
+    .history-search-row,
+    .history-filter-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+
+/* ===== FINAL STATUS + ACTION COLUMN FIX ===== */
+.history-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.history-table .history-date-col,
+.history-table td.history-date-col { width: 7% !important; }
+
+.history-table .history-train-col,
+.history-table td.history-train-col { width: 20% !important; }
+
+.history-table .history-wagons-col,
+.history-table td.history-wagons-col { width: 8% !important; }
+
+.history-table .history-yr-col,
+.history-table td.history-yr-col { width: 7% !important; }
+
+.history-table .history-status-col,
+.history-table td.history-status-col {
+    width: 7% !important;
+    min-width: 0 !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+}
+
+/* Status is intentionally the same width as Y/R */
+.history-status-col .status-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    font-size: .68rem !important;
+    padding: 2px 3px !important;
+}
+
+.history-status-col .badge {
+    font-size: .62rem !important;
+    padding: 3px 6px !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+}
+
+/* Remaining width goes to Actions */
+.history-table .history-action-heading,
+.history-table td.history-actions {
+    width: 51% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.history-actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+.history-actions-grid .btn {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    font-size: .72rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+}
+
+
+/* Status text polish */
+.history-table .history-status-col {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+.history-status-col .badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 5px !important;
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    padding: 4px 8px !important;
+}
+.history-status-col .status-select {
+    text-align: center !important;
+    font-size: .78rem !important;
+    font-weight: 700 !important;
+    height: 30px !important;
+}
+.history-status-col .status-select option {
+    font-weight: 700 !important;
+}
+
+
+/* Single colored Status dropdown */
+.history-status-col .status-select {
+    display: block !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    background-image: none !important;
+    cursor: pointer !important;
+}
+.status-select.status-draft {
+    background-color: #6c757d !important;
+    color: #fff !important;
+    border-color: #6c757d !important;
+}
+.status-select.status-progress {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+    border-color: #ffc107 !important;
+}
+.status-select.status-completed {
+    background-color: #198754 !important;
+    color: #fff !important;
+    border-color: #198754 !important;
+}
+.status-select.status-closed {
+    background-color: #343a40 !important;
+    color: #fff !important;
+    border-color: #343a40 !important;
+}
+
+
+/* Compact Date column so dates never overlap Train No. */
+.history-table .history-date-col {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    font-size: .72rem !important;
+    letter-spacing: -.15px !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+.history-table td.history-date-col {
+    font-size: .72rem !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+
+</style>
+</head>
+<body class="history-page">
+<script src="../js/cloud.js"></script><script src="../js/auth.js"></script>
+<header class="page-topbar no-print"><a href="../index.html"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a><div class="module-title">DAMAGE REPORT HISTORY</div><div class="page-user"><i class="bi bi-person-circle"></i><strong data-user-name>User</strong><button type="button" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i></button></div></header>
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm mb-4"><div class="card-body">
+    <div class="history-search-row">
+      <div class="history-filter-item"><label class="form-label fw-bold">Train Number</label><input id="historyTrainSearch" class="form-control" placeholder="Search Train No."></div>
+      <div class="history-filter-item"><label class="form-label fw-bold">Date</label><input id="historyDateSearch" type="date" class="form-control"></div>
+      <div class="history-filter-item"><label class="form-label fw-bold">Month</label><select id="historyMonthSearch" class="form-select"><option value="">All Months</option></select></div>
+      <div class="history-filter-item"><label class="form-label fw-bold">Status</label><select id="historyStatusSearch" class="form-select"><option value="">All Status</option><option>Draft</option><option>In Progress</option><option>Completed</option><option>Closed</option></select></div>
+      <div class="col-md-1 d-flex gap-2"><button class="btn btn-primary flex-fill" onclick="applyHistoryFilter()">Search</button><button class="btn btn-secondary" onclick="clearHistoryFilter()">Clear</button></div>
+    </div>
+  </div></div>
+  <div id="historyEmpty" class="alert alert-info d-none">No saved damage reports found.</div>
+  <div id="historyList"></div>
+</div>
+<div class="modal fade" id="historyViewModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Damage Report — View</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="card bg-light border-0 mb-3"><div class="card-body py-2 small"><div class="row"><div class="history-filter-item"><strong>Created By:</strong> <span id="viewCreatedBy">—</span></div><div class="history-filter-item"><strong>Created At:</strong> <span id="viewCreatedAt">—</span></div><div class="history-filter-item"><strong>Last Edited By:</strong> <span id="viewEditedBy">—</span></div><div class="history-filter-item"><strong>Last Edited At:</strong> <span id="viewEditedAt">—</span></div></div></div></div><div class="card border-0 bg-light mb-3"><div class="card-body py-2 small"><div class="row"><div class="history-filter-item"><strong>Report Status:</strong> <span id="viewReportStatus">—</span></div><div class="history-filter-item"><strong>Status Changed By:</strong> <span id="viewStatusChangedBy">—</span></div><div class="history-filter-item"><strong>Status Changed At:</strong> <span id="viewStatusChangedAt">—</span></div></div></div></div><div class="row mb-3"><div class="history-filter-item"><strong>Train No.</strong><div id="viewTrainNo">-</div></div><div class="history-filter-item"><strong>Date</strong><div id="viewDate">-</div></div><div class="history-filter-item"><strong>Rake ID</strong><div id="viewRake">-</div></div><div class="history-filter-item"><strong>Wagons</strong><div id="viewWagonCount">0</div></div></div>
+    <div class="table-responsive"><table class="table table-bordered history-view-table"><thead><tr><th>Sl.</th><th>Owner</th><th>Wagon No.</th><th>Type</th><th>Remarks</th><th>Incoming Damages</th></tr></thead><tbody id="historyViewBody"></tbody></table></div>
+  </div>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/history.js"></script>
+<div class="modal fade" id="changePasswordModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form id="changePasswordForm"><div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="changePasswordMsg"></div><label class="form-label">Current Password</label><input id="currentPasswordInput" type="password" class="form-control mb-3" required><label class="form-label">New Password</label><input id="newPasswordInput" type="password" class="form-control" required></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Change Password</button></div></form></div></div></div><script>function openChangePassword(){const m=document.getElementById("changePasswordModal");if(!m)return;bootstrap.Modal.getOrCreateInstance(m).show()}document.addEventListener("DOMContentLoaded",()=>{const f=document.getElementById("changePasswordForm");if(f)f.onsubmit=e=>{e.preventDefault();const r=PRDMSAuth.changeOwnPassword(currentPasswordInput.value,newPasswordInput.value);const box=document.getElementById("changePasswordMsg");if(r.ok){box.innerHTML='<div class="alert alert-success">Password changed successfully.</div>';f.reset();setTimeout(()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("changePasswordModal")).hide(),700)}else box.innerHTML='<div class="alert alert-danger">'+r.message+'</div>'}});</script></body></html>

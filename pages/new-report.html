@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>New Damage Report</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <!-- PDF.js for BPC wagon extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Common Style -->
+    <link rel="stylesheet" href="../css/style.css">
+
+
+<style id="print-hide-web-ui">
+@media print {
+  .page-topbar.no-print,
+  #bpcImportStatus.no-print,
+  .auto-save-indicator.no-print {
+    display: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<script src="../js/cloud.js"></script><script src="../js/auth.js"></script>
+
+    <!-- Navigation -->
+
+    <header class="page-topbar no-print"><a href="../index.html"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a><div class="module-title">NEW DAMAGE REPORT</div><div class="page-user"><i class="bi bi-person-circle"></i><strong data-user-name>User</strong><button type="button" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i></button></div></header>
+
+
+    <div class="auto-save-indicator no-print" id="autoSaveStatus" role="status">
+        <i class="bi bi-cloud-check"></i>
+        <span>Auto-save: Ready</span>
+    </div>
+
+<div class="container mt-4 print-report-title">
+    <h5 id="printReportHeading" class="text-center fw-bold">
+    Damage report of Train No:- <span id="printHeadingTrainNo">________________</span>, NRY/NMP, Dated:- <span id="printHeadingDate">________________</span>.
+</h5>
+    <hr class="print-title-line">
+</div>
+
+<div class="container">
+
+    <div class="row mb-3 print-original-field">
+
+        <div class="col-md-8">
+
+            <label class="form-label fw-bold">
+
+                Train No.
+
+            </label>
+
+            <input
+    type="text"
+    class="form-control"
+    id="trainNo"
+    name="trainNo">
+
+        </div>
+
+        <div class="col-md-4">
+
+            <label class="form-label fw-bold">
+
+                Date
+
+            </label>
+
+            <input
+    type="date"
+    class="form-control"
+    id="reportDate"
+    name="reportDate">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row mb-3 print-original-field">
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            Rake ID
+
+        </label>
+
+        <input
+    type="text"
+    class="form-control"
+    id="rakeID"
+    name="rakeID">
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            Rake Arrived
+
+        </label>
+
+        <input
+    type="text"
+    class="form-control"
+    id="rakeArrived"
+    name="rakeArrived"
+    placeholder="Line No., Time & Date">
+
+    </div>
+
+</div>
+
+<div class="row mb-3 print-original-field">
+
+    <div class="col-md-8">
+
+        <label class="form-label fw-bold">
+
+            I/BPC Particulars
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="ibpc"
+            name="ibpc">
+
+    </div>
+
+    <div class="col-md-4">
+
+        <label class="form-label fw-bold">
+
+            EX. Station
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="exStation"
+            name="exStation">
+
+    </div>
+
+</div>
+
+<div class="row mb-3 print-original-field">
+
+    <div class="col-md-12">
+
+        <label class="form-label fw-bold">
+
+            Damage/Deficiency Occurrence
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="damageOccurrence"
+            name="damageOccurrence">
+
+    </div>
+
+</div>
+
+<div class="row mb-3 print-original-field">
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            Last Loading Point
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="loadingPoint"
+            name="loadingPoint">
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label class="form-label fw-bold">
+
+            Last Unloading Point
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="unloadingPoint"
+            name="unloadingPoint">
+
+    </div>
+
+</div>
+
+<div class="row mb-3 print-original-field">
+
+    <div class="col-md-4">
+
+        <label class="form-label fw-bold">
+
+            Content
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="content"
+            name="content">
+
+    </div>
+
+    <div class="col-md-4">
+
+        <label class="form-label fw-bold">
+
+            Consignee
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="consignee"
+            name="consignee">
+
+    </div>
+
+    <div class="col-md-4">
+
+        <label class="form-label fw-bold">
+
+            Consignor
+
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="consignor"
+            name="consignor">
+
+    </div>
+
+</div>
+
+<div class="row mb-4">
+
+    <div class="col-md-12">
+
+        <label class="form-label fw-bold print-original-exam">
+
+    Examination By
+
+</label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="examinedBy"
+            name="examinedBy"
+            placeholder="Enter first supervisor name">
+
+        <div class="mt-2 second-examiner-entry">
+            <label class="form-label fw-bold">Examination By 2 (Optional)</label>
+            <input
+                type="text"
+                class="form-control"
+                id="examinedBy2"
+                name="examinedBy2"
+                placeholder="Enter second supervisor name (if applicable)">
+        </div>
+
+        <div class="row mb-4 print-original-field">
+
+    <div class="col-md-12">
+
+        <label class="form-label fw-bold">
+            Representative of
+        </label>
+
+        <input
+            type="text"
+            class="form-control"
+            id="representativeOf"
+            name="representativeOf"
+            placeholder="Enter Representative / Agency">
+
+    </div>
+
+</div>
+
+        <!-- =========================================
+     PRINT-ONLY DAMAGE REPORT PARTICULARS
+     ========================================= -->
+
+<div id="printDamageParticulars">
+
+        <div class="print-particulars-grid">
+
+        <!-- LEFT SIDE -->
+
+        <div class="print-particulars-left">
+
+            <div>
+                <strong>Train No.</strong>
+                <span id="printTrainNo"></span>
+            </div>
+
+            <div>
+                <strong>Rake ID</strong>
+                <span id="printRakeID"></span>
+            </div>
+
+            <div>
+                <strong>Rake Arrived</strong>
+                <span id="printRakeArrived"></span>
+            </div>
+
+            <div>
+                <strong>I/BPC Particulars</strong>
+                <span id="printIBPC"></span>
+            </div>
+
+            <div>
+                <strong>EX. Station</strong>
+                <span id="printExStation"></span>
+            </div>
+
+            <div>
+                <strong>Damage/Deficiency Occurrence</strong>
+                <span id="printDamageOccurrence"></span>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div class="print-particulars-right">
+
+            <div>
+                <strong>Last Loading Point</strong>
+                <span id="printLoadingPoint"></span>
+            </div>
+
+            <div>
+                <strong>Last Unloading Point</strong>
+                <span id="printUnloadingPoint"></span>
+            </div>
+
+            <div>
+                <strong>Content</strong>
+                <span id="printContent"></span>
+            </div>
+
+            <div>
+                <strong>Consignee</strong>
+                <span id="printConsignee"></span>
+            </div>
+
+            <div>
+                <strong>Consignor</strong>
+                <span id="printConsignor"></span>
+            </div>
+
+            <div>
+                <strong>Examination By</strong>
+                <span id="printExaminedBy"></span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<h6 class="fw-bold">
+    During examination found fresh heavy damages which are mentioned below:-
+</h6>
+
+<br>
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-sm text-center align-middle">
+
+    <thead>
+
+    <tr id="wagonTableHeader">
+
+        <th rowspan="2">
+            Sl.<br>No
+        </th>
+
+        <th rowspan="2">
+            O/Rly
+        </th>
+
+        <th rowspan="2">
+            Wagon<br>no.
+        </th>
+
+        <th rowspan="2">
+            Type
+        </th>
+
+        <th rowspan="2" style="min-width:300px;">
+            Incoming Damages.
+        </th>
+
+        <th rowspan="2">
+            REMA<br>RKS
+        </th>
+
+        <th id="yardRepairHeader">
+            Yard Repair Particulars
+        </th>
+
+        <th rowspan="2"
+    class="print-action-column"
+    style="width:90px; min-width:90px;">
+    Action
+</th>
+
+    </tr>
+
+    <tr id="repairColumnHeaderRow">
+
+    </tr>
+
+</thead>
+
+    <tbody id="wagonTableBody">
+
+    </tbody>
+
+</table>
+
+</div>
+
+
+<div class="mt-3">
+
+<div class="d-flex flex-wrap gap-2 mt-3">
+
+    <button
+        type="button"
+        class="btn btn-success"
+        id="uploadBpcBtn">
+        <i class="bi bi-file-earmark-pdf"></i> Upload BPC
+    </button>
+
+    <input
+        type="file"
+        id="bpcFileInput"
+        accept="application/pdf,.pdf"
+        hidden>
+
+    <button
+    class="btn btn-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#addWagonModal"
+    onclick="clearWagonForm()">
+
+    + Add Wagon
+
+</button>
+
+    <button
+    type="button"
+    class="btn btn-secondary"
+    onclick="openRepairColumns()">
+
+    ⚙ Repair Columns
+
+</button>
+
+</div>
+
+<div id="bpcImportStatus" class="small mt-2 text-muted no-print"></div>
+
+<!-- =========================================
+     REPORT ACTION BUTTONS
+     ========================================= -->
+
+<div class="report-action-bar mt-4 mb-5">
+
+    <button
+        type="button"
+        class="btn btn-success"
+        onclick="saveAndExit()">
+        <i class="bi bi-check-circle"></i>
+        Save & Exit
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        onclick="saveAndPrint()">
+        <i class="bi bi-printer"></i>
+        Save & Print
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-info text-white"
+        onclick="printManpower()">
+        <i class="bi bi-calculator"></i>
+        Print Manpower
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-warning"
+        onclick="saveProgress()">
+        <i class="bi bi-save"></i>
+        Save Progress
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-danger"
+        onclick="cancelReport()">
+        <i class="bi bi-x-circle"></i>
+        Cancel
+    </button>
+
+</div>
+
+<!-- PRINT SIGNATURE SECTION -->
+
+<div id="printSignatureSection">
+
+    <div class="signature-row">
+
+        <div class="signature-box">
+            (CYM/NRY/NMP)
+        </div>
+
+        <div class="signature-box examiner-signature-1">
+            <span id="printSignatureExaminer1">(SSE/JE/C&amp;W/NMP)</span>
+        </div>
+
+        <div class="signature-box examiner-signature-2" id="printSignatureExaminer2Box">
+            <span id="printSignatureExaminer2">(SSE/JE/C&amp;W/NMP)</span>
+        </div>
+
+        <div class="signature-box">
+            (Representative of <span id="printRepresentative"></span>)
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<br>
+
+    </div>
+
+</div>
+
+<!-- Add Wagon Modal -->
+
+<div class="modal fade" id="addWagonModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Add Wagon Details
+
+                </h5>
+
+                <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+    <div class="row mb-3">
+
+        <div class="col-md-2">
+
+            <label class="form-label fw-bold">
+
+                O/Rly
+
+            </label>
+
+            <input
+                type="text"
+                class="form-control"
+                id="orly">
+
+        </div>
+
+        <div class="col-md-4">
+
+            <label class="form-label fw-bold">
+
+                Wagon Number
+
+            </label>
+
+            <input
+    type="text"
+    class="form-control"
+    id="wagonNo"
+    inputmode="numeric"
+    maxlength="11"
+    pattern="[0-9]{11}">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <label class="form-label fw-bold">
+
+                Wagon Type
+
+            </label>
+
+            <input
+                type="text"
+                class="form-control"
+                id="wagonType">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <label class="form-label fw-bold">
+
+                Remarks
+
+            </label>
+
+            <select
+                class="form-select"
+                id="remarks">
+
+                <option value="Y/R">Y/R</option>
+                <option value="SICK">SICK</option>
+                <option value="GAP">GAP</option>
+                <option value="ROH">ROH</option>
+                <option value="POH">POH</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+<div class="row mb-3">
+
+    <div class="col-md-12">
+
+        <label class="form-label fw-bold">
+
+            Incoming Damages
+
+        </label>
+
+        <textarea
+            class="form-control"
+            id="incomingDamages"
+            rows="5"></textarea>
+
+    </div>
+
+</div>
+
+<hr>
+
+<h6 class="fw-bold">
+
+    Repair Details
+
+</h6>
+
+<div id="repairFields">
+
+</div>
+
+<!-- =========================================
+     FLOOR / PANEL FITTED DETAILS
+     ========================================= -->
+
+<div class="mt-4 p-3 border rounded bg-light">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+
+        <h6 class="fw-bold mb-0">
+            Floor / Panel Fitted Details
+        </h6>
+
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            onclick="openFittedDetails()">
+
+            + Add Fitted Item
+
+        </button>
+
+    </div>
+
+    <div id="fittedDetailsList">
+        <div class="text-muted small">
+            No floor/panel fitted details added.
+        </div>
+    </div>
+
+</div>
+
+            <div class="modal-footer">
+
+    <button
+        type="button"
+        class="btn btn-success"
+        id="saveWagonBtn">
+
+        Save Wagon
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        id="saveNextBtn">
+
+        Save & Next
+
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-secondary"
+        data-bs-dismiss="modal">
+
+        Cancel
+
+    </button>
+
+</div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+<!-- =========================================
+     FLOOR / PANEL FITTED MODAL
+     ========================================= -->
+
+<div
+    class="modal fade"
+    id="fittedDetailsModal"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Floor / Panel Fitted Details
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <!-- ITEM NAME -->
+
+                <div class="mb-3">
+
+                    <label class="form-label fw-bold">
+                        Fitted Item
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="fittedItemName"
+                        list="fittedItemOptions"
+                        placeholder="Type Panel Fitted or Floor Fitted">
+
+                    <datalist id="fittedItemOptions">
+
+                        <option value="Panel Fitted">
+                        <option value="Floor Fitted">
+
+                    </datalist>
+
+                </div>
+
+
+                <!-- DIMENSIONS -->
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-bold">
+                            Length
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="fittedLength"
+                                min="0"
+                                step="0.01"
+                                placeholder="Enter length">
+
+                            <select
+                                class="form-select"
+                                id="fittedLengthUnit"
+                                style="max-width:130px;">
+
+                                <option value="inch">
+                                    Inches
+                                </option>
+
+                                <option value="feet">
+                                    Feet
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-bold">
+                            Breadth
+                        </label>
+
+                        <div class="input-group">
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="fittedBreadth"
+                                min="0"
+                                step="0.01"
+                                placeholder="Enter breadth">
+
+                            <select
+                                class="form-select"
+                                id="fittedBreadthUnit"
+                                style="max-width:130px;">
+
+                                <option value="inch">
+                                    Inches
+                                </option>
+
+                                <option value="feet">
+                                    Feet
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- AUTOMATIC VALUES -->
+
+                <hr>
+
+                <h6 class="fw-bold">
+                    Automatically Calculated Values
+                </h6>
+
+
+                <div class="row text-center">
+
+                    <div class="col-md-4">
+
+                        <div class="border rounded p-2">
+
+                            <small class="text-muted">
+                                Dimension
+                            </small>
+
+                            <div
+                                class="fw-bold"
+                                id="fittedDimension">
+
+                                —
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="border rounded p-2">
+
+                            <small class="text-muted">
+                                Weight
+                            </small>
+
+                            <div
+                                class="fw-bold"
+                                id="fittedWeight">
+
+                                —
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-4">
+
+                        <div class="border rounded p-2">
+
+                            <small class="text-muted">
+                                Welding Length
+                            </small>
+
+                            <div
+                                class="fw-bold"
+                                id="fittedWelding">
+
+                                —
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="alert alert-secondary mt-3 mb-0 small">
+
+                    Values are calculated automatically after entering
+                    length and breadth.
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    onclick="saveFittedDetail()">
+
+                    Add Fitted Item
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- Repair Columns Modal -->
+
+<div id="repairColumnModal"
+     class="repair-columns-popup"
+     style="display:none; visibility:hidden; opacity:0;">
+
+    <div class="repair-columns-dialog">
+
+        <div class="repair-columns-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Repair Columns
+                </h5>
+
+                <button
+    type="button"
+    class="btn-close"
+    onclick="closeRepairColumns()">
+</button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+
+                            <th width="60%">
+                                Column Name
+                            </th>
+
+                            <th width="40%">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="repairColumnBody">
+
+                        <tr>
+
+                            <td>
+                                Door Repair
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Panel Repair
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Lock Lifter Handle Change
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Lock Lifter Handle Repair
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                K/Pin Fitted
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                Side Frame Key with Nut & Bolt Fitted
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-warning">
+                                    Rename
+                                </button>
+
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+                <button
+    type="button"
+    class="btn btn-success"
+    onclick="addRepairColumn()">
+
+    + Add New Column
+
+</button>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+    type="button"
+    class="btn btn-primary"
+    onclick="saveRepairColumnChanges()">
+
+    Save Changes
+
+</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade no-print" id="resumeDraftModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Auto-saved Draft Found</h5>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">An unfinished damage report was found.</p>
+        <div class="auto-save-resume-note" id="resumeDraftInfo">You can continue from where you stopped.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" id="discardDraftBtn">Discard Draft</button>
+        <button type="button" class="btn btn-primary" id="resumeDraftBtn"><i class="bi bi-arrow-repeat me-1"></i>Resume Draft</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/script.js"></script>
+<script src="../js/history.js"></script>
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form id="changePasswordForm"><div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="changePasswordMsg"></div><label class="form-label">Current Password</label><input id="currentPasswordInput" type="password" class="form-control mb-3" required><label class="form-label">New Password</label><input id="newPasswordInput" type="password" class="form-control" required></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Change Password</button></div></form></div></div></div><script>function openChangePassword(){const m=document.getElementById("changePasswordModal");if(!m)return;bootstrap.Modal.getOrCreateInstance(m).show()}document.addEventListener("DOMContentLoaded",()=>{const f=document.getElementById("changePasswordForm");if(f)f.onsubmit=e=>{e.preventDefault();const r=PRDMSAuth.changeOwnPassword(currentPasswordInput.value,newPasswordInput.value);const box=document.getElementById("changePasswordMsg");if(r.ok){box.innerHTML='<div class="alert alert-success">Password changed successfully.</div>';f.reset();setTimeout(()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("changePasswordModal")).hide(),700)}else box.innerHTML='<div class="alert alert-danger">'+r.message+'</div>'}});</script>
+<div class="modal fade" id="duplicateReportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Duplicate Report Found</h5>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">A damage report already exists for this:</p>
+        <div class="border rounded p-3 bg-light mb-3">
+          <div><strong>Train No.:</strong> <span id="duplicateTrainNo">-</span></div>
+          <div><strong>Report Date:</strong> <span id="duplicateReportDate">-</span></div>
+        </div>
+        <p class="mb-0 text-muted small">Creating another report with the same Train Number and Report Date may result in duplicate records.</p>
+      </div>
+      <div class="modal-footer flex-wrap">
+        <button type="button" class="btn btn-outline-secondary" id="duplicateCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-outline-primary" id="duplicateViewBtn"><i class="bi bi-eye me-1"></i>View Existing</button>
+        <button type="button" class="btn btn-primary" id="duplicateEditBtn"><i class="bi bi-pencil-square me-1"></i>Edit Existing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>
+

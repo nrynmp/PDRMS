@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PRDMS | Dashboard</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"><link rel="stylesheet" href="css/style.css"><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
+/* Dashboard Report Status: single-row compact layout */
+.report-status-single-row .status-card-item { min-height: 78px; }
+</style>
+<style id="prdms-final-dashboard-polish">
+/* =========================================
+   PRDMS FINAL DASHBOARD POLISH – VERSION 0.2
+   ========================================= */
+
+:root{
+    --prdms-surface:#ffffff;
+    --prdms-border:#dfe5ec;
+    --prdms-muted:#6c757d;
+    --prdms-heading:#243b53;
+    --prdms-shadow:0 6px 20px rgba(31,45,61,.08);
+}
+
+body{
+    background:#f4f6f9;
+}
+
+.dashboard-container,
+main .container,
+.container.mt-4{
+    max-width:1320px;
+}
+
+/* Dashboard heading area */
+.dashboard-header,
+.page-header,
+.dashboard-title-wrap{
+    margin-bottom:1.25rem;
+}
+
+.dashboard-header h1,
+.dashboard-header h2,
+.page-title,
+main h2{
+    color:var(--prdms-heading);
+    font-weight:700;
+    letter-spacing:.1px;
+}
+
+/* Give every dashboard card one consistent professional appearance */
+.card{
+    border:1px solid var(--prdms-border);
+    border-radius:12px;
+    box-shadow:var(--prdms-shadow);
+    background:var(--prdms-surface);
+}
+
+.card-header{
+    background:#fff;
+    border-bottom:1px solid #edf0f3;
+    border-radius:12px 12px 0 0 !important;
+    font-weight:700;
+    color:var(--prdms-heading);
+}
+
+/* Statistic cards */
+.dashboard-stat-card,
+.stat-card,
+.summary-card{
+    height:100%;
+    transition:transform .18s ease, box-shadow .18s ease;
+}
+
+.dashboard-stat-card:hover,
+.stat-card:hover,
+.summary-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px rgba(31,45,61,.12);
+}
+
+.dashboard-stat-card .card-body,
+.stat-card .card-body,
+.summary-card .card-body{
+    padding:1rem 1.1rem;
+}
+
+.dashboard-stat-card h3,
+.stat-card h3,
+.summary-card h3,
+.dashboard-stat-card .display-6,
+.stat-card .display-6{
+    color:var(--prdms-heading);
+    font-weight:700;
+    margin-bottom:.2rem;
+}
+
+.dashboard-stat-card small,
+.stat-card small,
+.summary-card small{
+    color:var(--prdms-muted);
+    font-weight:600;
+}
+
+/* Charts: consistent title spacing and height */
+.chart-card .card-body,
+.card .chart-container{
+    padding:1rem;
+}
+
+.chart-container{
+    position:relative;
+    min-height:300px;
+}
+
+.chart-container canvas{
+    max-width:100% !important;
+}
+
+/* Report status single row */
+.report-status-single-row{
+    align-items:stretch;
+}
+
+.report-status-single-row > [class*="col"]{
+    display:flex;
+}
+
+.report-status-single-row .border{
+    width:100%;
+    min-height:82px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    background:#fafbfc;
+    border-color:var(--prdms-border) !important;
+    border-radius:10px !important;
+    transition:transform .18s ease, box-shadow .18s ease;
+}
+
+.report-status-single-row .border:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(31,45,61,.08);
+}
+
+.report-status-single-row small{
+    color:var(--prdms-muted);
+    font-weight:700;
+}
+
+.report-status-single-row h4{
+    color:var(--prdms-heading);
+    font-size:1.35rem;
+    font-weight:700;
+    margin:.2rem 0 0;
+}
+
+/* Improve row rhythm */
+.row.g-3 > [class*="col"]{
+    margin-bottom:0;
+}
+
+section.mt-4{
+    margin-top:1.25rem !important;
+}
+
+/* Empty / zero states */
+.dashboard-empty-state{
+    padding:2rem 1rem;
+    text-align:center;
+    color:var(--prdms-muted);
+}
+
+/* Responsive finishing */
+@media (max-width: 991.98px){
+    .chart-container{min-height:270px;}
+}
+
+@media (max-width: 767.98px){
+    body{font-size:.94rem;}
+    .card{border-radius:10px;}
+    .dashboard-stat-card .card-body,
+    .stat-card .card-body,
+    .summary-card .card-body{padding:.85rem;}
+    .chart-container{min-height:240px;}
+    .report-status-single-row .border{min-height:72px;}
+    .report-status-single-row h4{font-size:1.2rem;}
+}
+
+@media (max-width: 575.98px){
+    .report-status-single-row > [class*="col"]{margin-bottom:0;}
+}
+</style>
+
+</head><body><script src="js/cloud.js"></script><script src="js/auth.js"></script>
+<div class="app-shell"><aside class="app-sidebar"><div class="sidebar-brand"><div class="brand-icon"><i class="bi bi-train-front-fill"></i></div><div><strong>PRDMS</strong><small>South Eastern Railway</small></div></div><div class="sidebar-label">MAIN MENU</div><a class="side-link active" href="index.html"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></a><a class="side-link" href="pages/new-report.html"><i class="bi bi-file-earmark-plus"></i><span>New Damage Report</span></a><a class="side-link" href="pages/damage-history.html"><i class="bi bi-clock-history"></i><span>Damage Report History</span></a><a class="side-link" href="pages/manpower-calculation.html"><i class="bi bi-calculator"></i><span>Manpower Calculation</span></a><a class="side-link" href="pages/manpower-master.html"><i class="bi bi-people"></i><span>Manpower Master</span></a><a class="side-link admin-only" href="pages/user-management.html"><i class="bi bi-person-gear"></i><span>User Management</span></a><div class="sidebar-bottom"><div class="sidebar-label">SYSTEM</div><button class="side-link side-logout" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i><span>Logout</span></button></div></aside>
+<main class="app-main"><header class="app-topbar"><div><button class="sidebar-mobile-toggle d-lg-none" id="sidebarToggle"><i class="bi bi-list"></i></button><div class="page-breadcrumb">PRDMS / <span>Dashboard</span></div><h2>Private Rake Damage Management System</h2></div><div class="user-profile"><div class="user-avatar"><i class="bi bi-person"></i></div><div><strong data-user-name>Administrator</strong><small data-user-role>Admin</small></div><button class="icon-logout" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i></button></div></header>
+<section class="welcome-banner"><div><div class="eyebrow">SOUTH EASTERN RAILWAY • NRY/NMP</div><h1>Good day, <span data-user-name>Administrator</span>.</h1><p>Manage private rake damage reports from BPC import through manpower calculation and report history.</p></div><div class="welcome-train"><i class="bi bi-train-front-fill"></i></div></section>
+<section class="stats-grid"><div class="stat-card"><div class="stat-icon blue"><i class="bi bi-files"></i></div><div><span>Total Reports</span><strong id="statReports">0</strong></div></div><div class="stat-card"><div class="stat-icon green"><i class="bi bi-train-freight-front"></i></div><div><span>Total Wagons</span><strong id="statWagons">0</strong></div></div><div class="stat-card"><div class="stat-icon orange"><i class="bi bi-tools"></i></div><div><span>Total Y/R Wagons</span><strong id="statYR">0</strong></div></div><div class="stat-card"><div class="stat-icon purple"><i class="bi bi-calendar-check"></i></div><div><span>This Month Reports</span><strong id="statMonth">0</strong></div></div><div class="stat-card"><div class="stat-icon teal"><i class="bi bi-clock-history"></i></div><div><span>This Month Man-Hours</span><strong id="statManHours">0.00</strong></div></div></section>
+<section class="dashboard-grid"><div class="dashboard-panel"><div class="panel-heading"><div><span class="eyebrow">WORKSPACE</span><h3>Quick Actions</h3></div></div><div class="quick-actions"><a href="pages/new-report.html" class="quick-action primary"><span class="quick-action-icon"><i class="bi bi-file-earmark-plus"></i></span><div><strong>New Damage Report</strong><small>Start with manual entry or Upload BPC</small></div><i class="bi bi-arrow-right-short"></i></a><a href="pages/damage-history.html" class="quick-action"><span class="quick-action-icon"><i class="bi bi-clock-history"></i></span><div><strong>Report History</strong><small>Search, view, edit and print reports</small></div><i class="bi bi-arrow-right-short"></i></a><a href="pages/manpower-calculation.html" class="quick-action"><span class="quick-action-icon"><i class="bi bi-calculator"></i></span><div><strong>Manpower Calculation</strong><small>Review repair manpower calculations</small></div><i class="bi bi-arrow-right-short"></i></a></div></div><div class="dashboard-panel"><span class="eyebrow">SYSTEM STATUS</span><h3>PRDMS Workspace</h3><div class="system-status"><div><i class="bi bi-check-circle-fill"></i><span>BPC Import</span><strong>Ready</strong></div><div><i class="bi bi-check-circle-fill"></i><span>Save & Next</span><strong>Ready</strong></div><div><i class="bi bi-check-circle-fill"></i><span>History Actions</span><strong>Ready</strong></div></div></div></section>
+<section class="dashboard-charts">
+    <div class="chart-panel chart-wide">
+        <div class="panel-heading">
+            <div><span class="eyebrow">LIVE ANALYTICS</span><h3>Month-wise Damage Reports</h3></div>
+        </div>
+        <div class="chart-wrap"><canvas id="reportsChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+        <div class="panel-heading">
+            <div><span class="eyebrow">LIVE ANALYTICS</span><h3>Month-wise Y/R Wagons</h3></div>
+        </div>
+        <div class="chart-wrap"><canvas id="yrChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+        <div class="panel-heading">
+            <div><span class="eyebrow">LIVE ANALYTICS</span><h3>Most Common Repair Types</h3></div>
+        </div>
+        <div class="chart-wrap"><canvas id="repairChart"></canvas></div>
+    </div>
+    <div class="chart-panel chart-wide">
+        <div class="panel-heading">
+            <div><span class="eyebrow">LIVE ANALYTICS</span><h3>Monthly Man-Hours Trend</h3></div>
+        </div>
+        <div class="chart-wrap"><canvas id="manhoursChart"></canvas></div>
+    </div>
+</section>
+<footer class="app-footer">© 2026 South Eastern Railway • PRDMS Version 0.2</footer><section class="mt-4"><div class="card shadow-sm"><div class="card-body"><div class="d-flex justify-content-between align-items-center mb-3"><h5 class="mb-0">Report Status</h5><i class="bi bi-clipboard-check"></i></div><div class="row text-center g-2 report-status-single-row"><div class="col-6 col-md-3"><div class="border rounded p-2"><small>Draft</small><h4 id="statusDraft">0</h4></div></div><div class="col-6 col-md-3"><div class="border rounded p-2"><small>In Progress</small><h4 id="statusProgress">0</h4></div></div><div class="col-6 col-md-3"><div class="border rounded p-2"><small>Completed</small><h4 id="statusCompleted">0</h4></div></div><div class="col-6 col-md-3"><div class="border rounded p-2"><small>Closed</small><h4 id="statusClosed">0</h4></div></div></div></div></section></main></div>
+<script>
+(function () {
+    const charts = [];
+
+    function getReports() {
+        try {
+            const data = JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY") || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch (e) { return []; }
+    }
+
+    const DEFAULT_RATES = {
+        "Door Repair": 0.83,
+        "Panel Repair": 0.58,
+        "Lock Lifter Handle Change": 1.59,
+        "Lock Lifter Handle Repair": 0.25,
+        "K/Pin Fitted": 0.20,
+        "Side Frame Key with Nut & Bolt Fitted": 0.15
+    };
+
+    function norm(v) { return String(v || "").trim().toLowerCase(); }
+
+    function reportManHours(report) {
+        let total = 0;
+        (report.wagons || []).filter(w => norm(w.remarks) === "y/r").forEach(wagon => {
+            Object.entries(wagon.repairs || {}).forEach(([name, qty]) => {
+                const rate = Number(DEFAULT_RATES[name] || 0);
+                total += Number(qty || 0) * rate;
+            });
+        });
+        return total;
+    }
+
+    function monthKey(report) {
+        const raw = report.reportDate || report.date || report.repairDate;
+        if (!raw) return null;
+        const d = new Date(raw + (String(raw).length === 10 ? "T00:00:00" : ""));
+        if (Number.isNaN(d.getTime())) return null;
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+    }
+
+    function monthLabel(key) {
+        const [y, m] = key.split("-").map(Number);
+        return new Date(y, m - 1, 1).toLocaleDateString("en-IN", {month:"short", year:"numeric"});
+    }
+
+    function lastMonths(keys, count) {
+        const now = new Date();
+        const out = [];
+        for (let i = count - 1; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            out.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"));
+        }
+        return [...new Set([...out, ...keys])].sort().slice(-Math.max(count, keys.length));
+    }
+
+    function updateDashboardStats() {
+        const reports = getReports();
+        const now = new Date();
+        const totalWagons = reports.reduce((sum, r) => sum + (Array.isArray(r.wagons) ? r.wagons.length : Number(r.wagonCount || 0)), 0);
+        const totalYR = reports.reduce((sum, r) => sum + (Array.isArray(r.wagons) ? r.wagons.filter(w => norm(w.remarks) === "y/r").length : Number(r.yrCount || 0)), 0);
+        const currentKey = now.getFullYear() + "-" + String(now.getMonth()+1).padStart(2,"0");
+        const monthReports = reports.filter(r => monthKey(r) === currentKey);
+        const monthManHours = monthReports.reduce((sum, r) => sum + reportManHours(r), 0);
+
+        document.getElementById("statReports").textContent = reports.length;
+        document.getElementById("statWagons").textContent = totalWagons;
+        document.getElementById("statYR").textContent = totalYR;
+        document.getElementById("statMonth").textContent = monthReports.length;
+        document.getElementById("statManHours").textContent = monthManHours.toFixed(2);
+    }
+
+    function makeChart(id, type, labels, data, label) {
+        const canvas = document.getElementById(id);
+        if (!canvas || !window.Chart) return;
+        charts.push(new Chart(canvas, {
+            type,
+            data: { labels, datasets: [{ label, data, borderWidth: 2, tension: 0.3, fill: type === "line" }] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { precision: 0 } },
+                    x: { grid: { display: false } }
+                }
+            }
+        }));
+    }
+
+    function updateCharts() {
+        charts.splice(0).forEach(c => c.destroy());
+        const reports = getReports();
+        const byMonth = {};
+        const repairTotals = {};
+
+        reports.forEach(report => {
+            const key = monthKey(report);
+            if (key) {
+                if (!byMonth[key]) byMonth[key] = { reports: 0, yr: 0, hours: 0 };
+                byMonth[key].reports += 1;
+                byMonth[key].yr += (report.wagons || []).filter(w => norm(w.remarks) === "y/r").length;
+                byMonth[key].hours += reportManHours(report);
+            }
+            (report.wagons || []).forEach(wagon => {
+                if (norm(wagon.remarks) !== "y/r") return;
+                Object.entries(wagon.repairs || {}).forEach(([name, qty]) => {
+                    const q = Number(qty || 0);
+                    if (q > 0) repairTotals[name] = (repairTotals[name] || 0) + q;
+                });
+            });
+        });
+
+        const monthKeys = lastMonths(Object.keys(byMonth), 6);
+        const labels = monthKeys.map(monthLabel);
+
+        makeChart("reportsChart", "line", labels, monthKeys.map(k => byMonth[k]?.reports || 0), "Reports");
+        makeChart("yrChart", "bar", labels, monthKeys.map(k => byMonth[k]?.yr || 0), "Y/R Wagons");
+
+        const repairs = Object.entries(repairTotals).sort((a,b)=>b[1]-a[1]).slice(0,8);
+        makeChart("repairChart", "bar", repairs.map(x=>x[0]), repairs.map(x=>x[1]), "Quantity");
+
+        makeChart("manhoursChart", "line", labels, monthKeys.map(k => Number((byMonth[k]?.hours || 0).toFixed(2))), "Man-Hours");
+    }
+
+    updateDashboardStats();
+    updateCharts();
+    window.addEventListener("storage", () => { updateDashboardStats(); updateCharts(); });
+    document.getElementById("sidebarToggle")?.addEventListener("click", () =>
+        document.querySelector(".app-sidebar").classList.toggle("show")
+    );
+})();
+</script><div class="modal fade" id="changePasswordModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form id="changePasswordForm"><div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="changePasswordMsg"></div><label class="form-label">Current Password</label><input id="currentPasswordInput" type="password" class="form-control mb-3" required><label class="form-label">New Password</label><input id="newPasswordInput" type="password" class="form-control" required></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Change Password</button></div></form></div></div></div><script>function openChangePassword(){const m=document.getElementById("changePasswordModal");if(!m)return;bootstrap.Modal.getOrCreateInstance(m).show()}document.addEventListener("DOMContentLoaded",()=>{const f=document.getElementById("changePasswordForm");if(f)f.onsubmit=e=>{e.preventDefault();const r=PRDMSAuth.changeOwnPassword(currentPasswordInput.value,newPasswordInput.value);const box=document.getElementById("changePasswordMsg");if(r.ok){box.innerHTML='<div class="alert alert-success">Password changed successfully.</div>';f.reset();setTimeout(()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("changePasswordModal")).hide(),700)}else box.innerHTML='<div class="alert alert-danger">'+r.message+'</div>'}});
+if(window.PRDMSAuth){document.querySelectorAll(".admin-only").forEach(el=>{if(!PRDMSAuth.isAdmin())el.style.display="none"});}
+<script>
+function updateReportStatusDashboard(){
+  let reports=[];try{reports=JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY")||"[]")}catch(e){}
+  const counts={Draft:0,"In Progress":0,Completed:0,Closed:0};
+  reports.forEach(r=>counts[r.reportStatus||"Draft"]=(counts[r.reportStatus||"Draft"]||0)+1);
+  const map={Draft:"statusDraft","In Progress":"statusProgress",Completed:"statusCompleted",Closed:"statusClosed"};
+  Object.entries(map).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=counts[k]||0});
+}
+document.addEventListener("DOMContentLoaded",()=>setTimeout(updateReportStatusDashboard,100));
+</script></script></body></html>
