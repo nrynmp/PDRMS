@@ -2742,3 +2742,230 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!document.getElementById("trainNo")) return;
     setTimeout(promptResumeAutoDraft, 500);
 });
+
+
+/* =====================================================
+   MANUAL WAGON ENTRY
+   Added separately from BPC and existing Add Wagon flow.
+   Each wagon is immediately committed to the report and
+   auto-saved when "Add Next Wagon" is clicked.
+   ===================================================== */
+
+let manualWagonSequence = [];
+
+function manualSafeText(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function openManualWagonEntry() {
+    // Rebuild the visible sequence from already committed manual wagons.
+    manualWagonSequence = wagons.filter(w => w.manualEntry === true);
+
+    renderManualWagonSequence();
+
+    const modalElement = document.getElementById("manualWagonEntryModal");
+    if (modalElement && typeof bootstrap !== "undefined") {
+        bootstrap.Modal.getOrCreateInstance(modalElement).show();
+        setTimeout(() => {
+            document.getElementById("manualWagonNo")?.focus();
+        }, 250);
+    }
+}
+
+function addManualSequenceWagon() {
+    const orlyInput = document.getElementById("manualCommonOrly");
+    const typeInput = document.getElementById("manualCommonType");
+    const wagonInput = document.getElementById("manualWagonNo");
+
+    const orly = (orlyInput?.value || "").trim();
+    const wagonType = (typeInput?.value || "").trim();
+    const wagonNo = (wagonInput?.value || "").trim();
+
+    if (!orly) {
+        alert("Please enter Owner / Rly first.");
+        orlyInput?.focus();
+        return;
+    }
+
+    if (!wagonType) {
+        alert("Please enter Wagon Type first.");
+        typeInput?.focus();
+        return;
+    }
+
+    if (!/^\d{11}$/.test(wagonNo)) {
+        alert("Wagon Number must contain exactly 11 digits.");
+        wagonInput?.focus();
+        return;
+    }
+
+    if (wagons.some(w => String(w.wagonNo || "") === wagonNo)) {
+        alert("Wagon No. " + wagonNo + " is already entered.");
+        wagonInput?.focus();
+        wagonInput?.select();
+        return;
+    }
+
+    // Immediately commit the wagon to the real report table.
+    // No damage parameters are opened or entered here.
+    const newWagon = {
+        id: Date.now(),
+        orly: orly,
+        wagonNo: wagonNo,
+        wagonType: wagonType,
+        remarks: "Y/R",
+        incomingDamages: "",
+        repairs: {},
+        fittedDetails: [],
+        manualEntry: true
+    };
+
+    wagons.push(newWagon);
+    manualWagonSequence.push(newWagon);
+
+    // Update the existing main wagon table immediately.
+    if (typeof refreshWagonTable === "function") {
+        refreshWagonTable();
+    }
+
+    // Immediate auto-save: wagon remains safe even if the page closes.
+    if (typeof saveAutoDraft === "function") {
+        saveAutoDraft(true);
+    }
+
+    wagonInput.value = "";
+    renderManualWagonSequence();
+    wagonInput.focus();
+}
+
+function removeManualSequenceWagon(index) {
+    const item = manualWagonSequence[index];
+    if (!item) return;
+
+    const globalIndex = wagons.findIndex(w =>
+        w === item ||
+        (w.id === item.id && String(w.wagonNo) === String(item.wagonNo))
+    );
+
+    if (globalIndex >= 0) {
+        wagons.splice(globalIndex, 1);
+    }
+
+    manualWagonSequence.splice(index, 1);
+
+    if (typeof refreshWagonTable === "function") {
+        refreshWagonTable();
+    }
+
+    if (typeof saveAutoDraft === "function") {
+        saveAutoDraft(true);
+    }
+
+    renderManualWagonSequence();
+}
+
+function renderManualWagonSequence() {
+    const body = document.getElementById("manualWagonSequenceBody");
+    const count = document.getElementById("manualWagonCount");
+    if (!body) return;
+
+    if (count) {
+        count.textContent = manualWagonSequence.length + " Wagon" +
+            (manualWagonSequence.length === 1 ? "" : "s");
+    }
+
+    if (!manualWagonSequence.length) {
+        body.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-muted py-3">
+                    No wagons added yet.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    body.innerHTML = manualWagonSequence.map((wagon, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${manualSafeText(wagon.orly)}</td>
+            <td><strong>${manualSafeText(wagon.wagonNo)}</strong></td>
+            <td>${manualSafeText(wagon.wagonType)}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="removeManualSequenceWagon(${index})"
+                        title="Remove">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function clearManualWagonEntry() {
+    if (!manualWagonSequence.length) return;
+
+    if (!confirm("Clear all manually entered wagons?")) {
+        return;
+    }
+
+    const idsToRemove = new Set(manualWagonSequence.map(w => w.id));
+
+    for (let i = wagons.length - 1; i >= 0; i--) {
+        if (idsToRemove.has(wagons[i].id) && wagons[i].manualEntry === true) {
+            wagons.splice(i, 1);
+        }
+    }
+
+    manualWagonSequence = [];
+
+    if (typeof refreshWagonTable === "function") {
+        refreshWagonTable();
+    }
+
+    if (typeof saveAutoDraft === "function") {
+        saveAutoDraft(true);
+    }
+
+    renderManualWagonSequence();
+    document.getElementById("manualWagonNo")?.focus();
+}
+
+function proceedManualWagonEntry() {
+    if (!manualWagonSequence.length) {
+        alert("Please add at least one wagon before proceeding.");
+        document.getElementById("manualWagonNo")?.focus();
+        return;
+    }
+
+    // Wagons are already in the main report table and already auto-saved.
+    const modalElement = document.getElementById("manualWagonEntryModal");
+    if (modalElement && typeof bootstrap !== "undefined") {
+        bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+    }
+
+    if (typeof saveAutoDraft === "function") {
+        saveAutoDraft(true);
+    }
+
+    // Keep existing Edit workflow unchanged. Users can now edit any wagon
+    // using the current Edit button to enter/correct damage details.
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key !== "Enter") return;
+
+    const modal = document.getElementById("manualWagonEntryModal");
+    const input = document.getElementById("manualWagonNo");
+
+    if (modal && input && document.activeElement === input &&
+        modal.classList.contains("show")) {
+        event.preventDefault();
+        addManualSequenceWagon();
+    }
+});
+

@@ -498,6 +498,14 @@
 </button>
 
     <button
+        type="button"
+        class="btn btn-outline-primary"
+        id="manualWagonEntryBtn"
+        onclick="openManualWagonEntry()">
+        <i class="bi bi-list-ol"></i> Manual Wagon Entry
+    </button>
+
+    <button
     type="button"
     class="btn btn-secondary"
     onclick="openRepairColumns()">
@@ -593,6 +601,104 @@
 </div>
 
 <!-- Add Wagon Modal -->
+
+
+<!-- =========================================
+     MANUAL WAGON ENTRY MODAL
+     Existing BPC and Add Wagon workflows remain unchanged.
+     ========================================= -->
+<div class="modal fade" id="manualWagonEntryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0">
+                        <i class="bi bi-list-ol me-2"></i>Manual Wagon Entry
+                    </h5>
+                    <small class="text-muted">
+                        Create the wagon sequence first. Damage details will be entered later using the existing Edit option.
+                    </small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="alert alert-light border mb-3">
+                    <strong>Step 1:</strong> Enter Owner/Rly and Wagon Type once.
+                    Then enter wagon numbers in the actual examination sequence.
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Owner / Rly</label>
+                        <input type="text" class="form-control" id="manualCommonOrly"
+                               placeholder="Example: NPSL">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Wagon Type</label>
+                        <input type="text" class="form-control" id="manualCommonType"
+                               placeholder="Example: BOXNHL">
+                    </div>
+                </div>
+
+                <div class="border rounded p-3 bg-light">
+                    <label class="form-label fw-semibold">Wagon Number</label>
+                    <div class="input-group">
+                        <input type="text" inputmode="numeric" maxlength="11"
+                               class="form-control" id="manualWagonNo"
+                               placeholder="Enter 11 digit wagon number">
+                        <button type="button" class="btn btn-primary"
+                                onclick="addManualSequenceWagon()">
+                            <i class="bi bi-plus-circle"></i> Add Next Wagon
+                        </button>
+                    </div>
+                    <div class="form-text">
+                        Only Wagon No. is required for each entry. Owner/Rly and Type are applied automatically.
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Manual Examination Sequence</strong>
+                        <span class="badge text-bg-secondary" id="manualWagonCount">0 Wagons</span>
+                    </div>
+                    <div class="table-responsive border rounded">
+                        <table class="table table-sm table-bordered mb-0 text-center align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:70px;">Sl.</th>
+                                    <th>O/Rly</th>
+                                    <th>Wagon No.</th>
+                                    <th>Type</th>
+                                    <th style="width:90px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manualWagonSequenceBody">
+                                <tr>
+                                    <td colspan="5" class="text-muted py-3">
+                                        No wagons added yet.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="clearManualWagonEntry()">
+                    Clear List
+                </button>
+                <button type="button" class="btn btn-success"
+                        onclick="proceedManualWagonEntry()">
+                    <i class="bi bi-check-circle"></i> Proceed to Damage Entry
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="addWagonModal" tabindex="-1">
 
