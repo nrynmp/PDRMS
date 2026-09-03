@@ -95,6 +95,7 @@ function loadReportForEditing(report) {
         consignee: "consignee",
         consignor: "consignor",
         examinedBy: "examinedBy",
+        examinedBy2: "examinedBy2",
         representativeOf: "representativeOf"
     };
 
@@ -102,6 +103,12 @@ function loadReportForEditing(report) {
         const el = document.getElementById(id);
         if (el && report[key] !== undefined) el.value = report[key] || "";
     });
+
+    // Support both the current ibpc field and older saved ibpcParticulars data.
+    const ibpcEl = document.getElementById("ibpc");
+    if (ibpcEl && !ibpcEl.value && report.ibpcParticulars !== undefined) {
+        ibpcEl.value = report.ibpcParticulars || "";
+    }
 
     if (Array.isArray(report.repairColumns) && report.repairColumns.length) {
         repairColumns = JSON.parse(JSON.stringify(report.repairColumns));
@@ -427,10 +434,10 @@ function escapeJs(value) {
 /* New-report loader: restore a history report for editing/printing. */
 function loadCurrentReportFromHistory() {
     const report = JSON.parse(localStorage.getItem("PRDMS_CURRENT_REPORT") || "null");
-    if (!report || !Array.isArray(report.wagons)) return;
+    if (!report) return;
 
     const params = new URLSearchParams(window.location.search);
-    if (!params.has("edit") && !params.has("print") && !params.has("view") && !params.has("resume")) return;
+    if (!params.has("edit") && !params.has("print") && !params.has("view")) return;
 
     loadReportForEditing(report);
 
@@ -463,7 +470,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
     if (document.getElementById("trainNo") && window.location.pathname.includes("new-report.html")) {
         const params = new URLSearchParams(window.location.search);
-        if (params.has("edit") || params.has("print")) {
+        if (params.has("edit") || params.has("print") || params.has("view")) {
             const editId = localStorage.getItem("PRDMS_EDIT_REPORT_ID");
             if (editId) window.__editingReportId = editId;
             loadCurrentReportFromHistory();

@@ -2365,3 +2365,21 @@ footer{
         display: block !important;
     }
 }
+
+
+/* TOTAL WELDING DIMENSION UNIT - keep cm visible in narrow total columns */
+#wagonTotalRow .fitted-column span {
+    display: inline-block;
+    white-space: normal;
+    word-break: normal;
+}
+#wagonTotalRow .fitted-column small {
+    font-size: inherit;
+    line-height: 1;
+}
+@media print {
+    #wagonTotalRow .fitted-column {
+        overflow: visible !important;
+        white-space: normal !important;
+    }
+}

@@ -613,10 +613,26 @@ function generateRepairFields() {
 }
 
 // ===============================
+// NORMAL ADD WAGON - COMMON OWNER/TYPE
+// ===============================
+// During one Add Wagon sequence, Owner/Rly and Wagon Type are reused automatically.
+let addWagonCommonOrly = "";
+let addWagonCommonType = "";
+
+function openNewWagonEntry() {
+    editingWagonIndex = null;
+    addWagonCommonOrly = "";
+    addWagonCommonType = "";
+    clearWagonForm(false);
+}
+
+// ===============================
 // Save Wagon
 // ===============================
 
 function saveWagon(options = {}) {
+
+    const wasEditing = editingWagonIndex !== null;
 
     const settings = {
         closeModal: options.closeModal !== false,
@@ -712,6 +728,12 @@ if (duplicateIndex !== -1) {
 
 refreshWagonTable();
 
+// Remember Owner/Rly and Wagon Type for the next normal Add Wagon entry.
+if (!wasEditing) {
+    addWagonCommonOrly = wagon.orly;
+    addWagonCommonType = wagon.wagonType;
+}
+
 console.log(wagons);
 
 if (settings.showAlert) {
@@ -737,37 +759,26 @@ return true;
 
 }
 
-function clearWagonForm() {
+function clearWagonForm(preserveCommon = true) {
 
-    document.getElementById("orly").value = "";
-
+    document.getElementById("orly").value = preserveCommon ? addWagonCommonOrly : "";
     document.getElementById("wagonNo").value = "";
-
-    document.getElementById("wagonType").value = "";
-
+    document.getElementById("wagonType").value = preserveCommon ? addWagonCommonType : "";
     document.getElementById("remarks").value = "Y/R";
-
     document.getElementById("incomingDamages").value = "";
 
     repairColumns.forEach(function(column, index) {
-
         const input = document.getElementById(`repair_${index}`);
-
-        if (input) {
-
-            input.value = 0;
-
-        }
-
+        if (input) input.value = 0;
     });
 
     editingWagonIndex = null;
     fittedDetails = [];
+    renderFittedDetails();
+    clearFittedCalculatedValues();
 
-renderFittedDetails();
-
-clearFittedCalculatedValues();
-
+    // Put the cursor directly on Wagon Number after Save & Next.
+    setTimeout(() => document.getElementById("wagonNo")?.focus(), 50);
 }
 
 // ===============================
@@ -783,6 +794,8 @@ function editWagon(index) {
 
     // Load wagon details into popup
 
+    addWagonCommonOrly = wagon.orly || "";
+    addWagonCommonType = wagon.wagonType || "";
     document.getElementById("orly").value = wagon.orly;
 
     document.getElementById("wagonNo").value = wagon.wagonNo;
@@ -1266,7 +1279,7 @@ function refreshWagonTable() {
                 </strong>
                 <br>
                 <span>
-                    WD ${totalWD.toFixed(2)} cm
+                    WD ${totalWD.toFixed(2)}<br><small>cm</small>
                 </span>
             </td>
         `;
@@ -1332,7 +1345,7 @@ function refreshWagonTable() {
                 </strong>
                 <br>
                 <span>
-                    WD ${totalWD.toFixed(2)} cm
+                    WD ${totalWD.toFixed(2)}<br><small>cm</small>
                 </span>
             </td>
         `;
@@ -1723,7 +1736,8 @@ function updatePrintReportHeading() {
         consignor: "printConsignor",
 
         examinedBy: "printExaminedBy",
-        examinedBy2: "printExaminedBy2"
+        examinedBy2: "printExaminedBy2",
+        representativeOf: "printRepresentative"
 
     };
 
@@ -1966,7 +1980,8 @@ function updateAllPrintParticulars() {
         "content": "printContent",
         "consignee": "printConsignee",
         "consignor": "printConsignor",
-        "examinedBy": "printExaminedBy"
+        "examinedBy": "printExaminedBy",
+        "representativeOf": "printRepresentative"
     };
 
     Object.keys(fields).forEach(function(sourceId) {
@@ -2027,7 +2042,8 @@ document.addEventListener("input", function(event) {
         "consignee",
         "consignor",
         "examinedBy",
-        "examinedBy2"
+        "examinedBy2",
+        "representativeOf"
     ];
 
     if (printFields.includes(event.target.id)) {
@@ -2068,8 +2084,12 @@ function collectReportData() {
         rakeID: document.getElementById("rakeID")?.value.trim() || "",
         rakeArrived: document.getElementById("rakeArrived")?.value.trim() || "",
 
+        ibpc:
+            document.getElementById("ibpc")?.value.trim() || "",
+
+        // Backward-compatible alias for previously saved reports.
         ibpcParticulars:
-            document.getElementById("ibpcParticulars")?.value.trim() || "",
+            document.getElementById("ibpc")?.value.trim() || "",
 
         exStation:
             document.getElementById("exStation")?.value.trim() || "",
@@ -2420,75 +2440,217 @@ function extractBpcWagonsFromText(text) {
 
     return found.map(({ serialNo, fallbackOrder, ...wagon }) => wagon);
 }
+let pendingBpcWagons = [];
+
+function openBpcPositionModal(importedWagons) {
+    pendingBpcWagons = importedWagons.map((wagon, index) => ({
+        ...wagon,
+        position: wagon.position ?? "",
+        _bpcIndex: index
+    }));
+    renderBpcPositionRows();
+    const modalEl = document.getElementById("bpcPositionModal");
+    if (modalEl && window.bootstrap) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function renderBpcPositionRows() {
+    const body = document.getElementById("bpcPositionTableBody");
+    const count = document.getElementById("bpcPositionCount");
+    if (!body) return;
+
+    const selectedCount = pendingBpcWagons.filter(w => String(w.position ?? "").trim() !== "").length;
+    if (count) count.textContent = selectedCount + " Selected";
+
+    body.innerHTML = pendingBpcWagons.map((w, i) => `
+        <tr data-wagon-search="${String(w.wagonNo || '').toLowerCase()} ${String(w.orly || '').toLowerCase()} ${String(w.wagonType || '').toLowerCase()}">
+            <td>
+                <input type="number" min="1" step="1"
+                    class="form-control form-control-sm text-center bpc-position-input"
+                    data-index="${i}"
+                    value="${w.position === '' ? '' : w.position}"
+                    placeholder="#"
+                    oninput="handleBpcPositionInput(this)">
+                <div class="invalid-feedback text-start bpc-position-error"></div>
+            </td>
+            <td><strong>${w.wagonNo || ''}</strong></td>
+            <td>${w.wagonType || ''}</td>
+            <td>${w.orly || ''}</td>
+        </tr>`).join("");
+}
+
+function updateBpcPositionCount() {
+    const count = document.getElementById("bpcPositionCount");
+    if (!count) return;
+    const selected = pendingBpcWagons.filter(w => String(w.position ?? "").trim() !== "").length;
+    count.textContent = selected + " Selected";
+}
+
+function clearBpcPositionError(input) {
+    if (!input) return;
+    input.classList.remove("is-invalid");
+    const error = input.parentElement?.querySelector(".bpc-position-error");
+    if (error) error.textContent = "";
+}
+
+function showBpcPositionError(input, message) {
+    if (!input) return;
+    input.classList.add("is-invalid");
+    const error = input.parentElement?.querySelector(".bpc-position-error");
+    if (error) error.textContent = message;
+}
+
+function handleBpcPositionInput(input) {
+    const i = Number(input.dataset.index);
+    if (!Number.isNaN(i) && pendingBpcWagons[i]) {
+        pendingBpcWagons[i].position = input.value.trim();
+    }
+
+    // Remove old duplicate/validation marks as soon as the user corrects a value.
+    document.querySelectorAll(".bpc-position-input").forEach(clearBpcPositionError);
+
+    // If the current position is repeated, immediately mark both/all repeated fields.
+    const value = input.value.trim();
+    if (/^\d+$/.test(value) && Number(value) >= 1) {
+        const sameInputs = [...document.querySelectorAll(".bpc-position-input")]
+            .filter(el => el.value.trim() === value);
+        if (sameInputs.length > 1) {
+            sameInputs.forEach(el => showBpcPositionError(el, "Position " + value + " is already used. Enter a unique position."));
+        }
+    }
+
+    updateBpcPositionCount();
+}
+
+function filterBpcPositionRows() {
+    const query = (document.getElementById("bpcWagonSearch")?.value || "").trim().toLowerCase();
+    document.querySelectorAll("#bpcPositionTableBody tr").forEach(row => {
+        row.style.display = !query || row.dataset.wagonSearch.includes(query) ? "" : "none";
+    });
+}
+
+function submitBpcPositions() {
+    const inputs = [...document.querySelectorAll(".bpc-position-input")];
+    inputs.forEach(input => {
+        const i = Number(input.dataset.index);
+        pendingBpcWagons[i].position = input.value.trim();
+        clearBpcPositionError(input);
+    });
+
+    // Blank positions are intentionally allowed. Only wagons actually examined/damaged
+    // and given a position will be added to the report.
+    const selected = pendingBpcWagons.filter(w => String(w.position ?? "").trim() !== "");
+
+    if (!selected.length) {
+        alert("Please enter an examination position for at least one wagon you want to add.");
+        return;
+    }
+
+    const inputByIndex = new Map(inputs.map(input => [Number(input.dataset.index), input]));
+    let hasError = false;
+
+    selected.forEach(w => {
+        const value = String(w.position).trim();
+        if (!/^\d+$/.test(value) || Number(value) < 1) {
+            const input = inputByIndex.get(w._bpcIndex);
+            showBpcPositionError(input, "Enter a valid examination position (1 or higher).");
+            hasError = true;
+        }
+    });
+
+    if (hasError) {
+        document.querySelector(".bpc-position-input.is-invalid")?.focus();
+        return;
+    }
+
+    const grouped = new Map();
+    selected.forEach(w => {
+        const key = String(Number(w.position));
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(w);
+    });
+
+    grouped.forEach((group, position) => {
+        if (group.length > 1) {
+            group.forEach(w => {
+                const input = inputByIndex.get(w._bpcIndex);
+                showBpcPositionError(input, "Position " + position + " is repeated. Each selected wagon needs a unique position.");
+            });
+            hasError = true;
+        }
+    });
+
+    if (hasError) {
+        document.querySelector(".bpc-position-input.is-invalid")?.focus();
+        return;
+    }
+
+    const ordered = [...selected]
+        .sort((a, b) => Number(a.position) - Number(b.position) || a._bpcIndex - b._bpcIndex)
+        .map(({ position, _bpcIndex, ...wagon }) => ({ ...wagon, examinationPosition: Number(position) }));
+
+    if (wagons.length > 0) {
+        const replace = confirm(
+            `The current report already contains ${wagons.length} wagon(s).\n\n` +
+            `You selected ${ordered.length} wagon(s) from the BPC.\n\n` +
+            "Press OK to replace the current wagon list, or Cancel to keep the current list and add only new wagon numbers."
+        );
+        if (replace) {
+            wagons = ordered;
+        } else {
+            const existing = new Set(wagons.map(w => w.wagonNo));
+            ordered.forEach(wagon => {
+                if (!existing.has(wagon.wagonNo)) {
+                    wagons.push(wagon);
+                    existing.add(wagon.wagonNo);
+                }
+            });
+        }
+    } else {
+        wagons = ordered;
+    }
+
+    refreshWagonTable();
+    if (typeof saveAutoDraft === "function") saveAutoDraft(true);
+    const modalEl = document.getElementById("bpcPositionModal");
+    if (modalEl && window.bootstrap) bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    setBpcImportStatus(
+        `${ordered.length} selected wagon(s) imported from ${importedBpcFileName}. Examination sequence is set by the entered positions.`,
+        "success"
+    );
+    alert(`${ordered.length} selected wagon(s) imported successfully in the examination sequence.`);
+    pendingBpcWagons = [];
+}
+
 async function importBpcPdf(file) {
     if (!file) return;
-
     if (typeof pdfjsLib === "undefined") {
         alert("BPC reader could not be loaded. Please check your internet connection and try again.");
         return;
     }
-
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
         alert("Please select a valid BPC PDF file.");
         return;
     }
-
     try {
         setBpcImportStatus("Reading BPC and extracting wagon details...", "primary");
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
         const data = new Uint8Array(await file.arrayBuffer());
         const pdf = await pdfjsLib.getDocument({ data }).promise;
         let fullText = "";
-
         for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
             const page = await pdf.getPage(pageNo);
             const content = await page.getTextContent();
             fullText += "\n" + content.items.map(item => item.str).join(" ");
         }
-
         const importedWagons = extractBpcWagonsFromText(fullText);
-
-        if (importedWagons.length === 0) {
+        if (!importedWagons.length) {
             setBpcImportStatus("No wagon details could be detected in this BPC.", "danger");
             alert("No wagon details could be detected. Please check that this is a text-readable BPC PDF.");
             return;
         }
-
-        if (wagons.length > 0) {
-            const replace = confirm(
-                `The current report already contains ${wagons.length} wagon(s).\n\n` +
-                `The BPC contains ${importedWagons.length} wagon(s).\n\n` +
-                "Press OK to replace the current wagon list, or Cancel to keep the current list and add only new wagon numbers."
-            );
-
-            if (replace) {
-                wagons = importedWagons;
-            } else {
-                const existing = new Set(wagons.map(w => w.wagonNo));
-                importedWagons.forEach(wagon => {
-                    if (!existing.has(wagon.wagonNo)) {
-                        wagons.push(wagon);
-                        existing.add(wagon.wagonNo);
-                    }
-                });
-            }
-        } else {
-            wagons = importedWagons;
-        }
-
         importedBpcFileName = file.name;
-        refreshWagonTable();
-        if (typeof saveAutoDraft === "function") saveAutoDraft(true);
-        setBpcImportStatus(
-            `${importedWagons.length} wagon(s) imported from ${file.name}. O/Rly, Wagon No. and Type are auto-filled. Edit Remarks and damage details as required.`,
-            "success"
-        );
-
-        alert(`${importedWagons.length} wagon(s) imported successfully from the BPC.`);
-
+        setBpcImportStatus(`${importedWagons.length} wagon(s) detected. Enter examination positions to set the actual sequence.`, "primary");
+        openBpcPositionModal(importedWagons);
     } catch (error) {
         console.error("BPC import error:", error);
         setBpcImportStatus("BPC import failed. Please try another BPC PDF.", "danger");
@@ -2667,61 +2829,9 @@ function restoreAutoDraft(data) {
 }
 
 function promptResumeAutoDraft() {
-    let draft = null;
-    try {
-        draft = JSON.parse(localStorage.getItem(PRDMS_AUTO_DRAFT_KEY) || "null");
-    } catch (e) {}
-
-    if (!prdmsDraftHasMeaningfulData(draft)) {
-        prdmsAutoSaveStarted = true;
-        return;
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const isHistoryMode = params.has("edit") || params.has("view") || params.has("print");
-
-    // History/View/Print already has an authoritative report to load.
-    if (isHistoryMode) {
-        prdmsAutoSaveStarted = true;
-        return;
-    }
-
-    const info = document.getElementById("resumeDraftInfo");
-    if (info && draft.autoSavedAt) {
-        info.textContent = "Last auto-saved: " +
-            new Date(draft.autoSavedAt).toLocaleString("en-IN") +
-            ". You can continue from where you stopped.";
-    }
-
-    const resumeBtn = document.getElementById("resumeDraftBtn");
-    const discardBtn = document.getElementById("discardDraftBtn");
-    const modalEl = document.getElementById("resumeDraftModal");
-
-    const resume = () => {
-        if (modalEl && window.bootstrap) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-        }
-        restoreAutoDraft(draft);
-    };
-
-    const discard = () => {
-        clearAutoSavedDraft();
-        if (modalEl && window.bootstrap) {
-            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-        }
-        prdmsAutoSaveStarted = true;
-    };
-
-    if (resumeBtn) resumeBtn.onclick = resume;
-    if (discardBtn) discardBtn.onclick = discard;
-
-    if (modalEl && window.bootstrap) {
-        bootstrap.Modal.getOrCreateInstance(modalEl, {backdrop: "static", keyboard: false}).show();
-    } else if (confirm("An auto-saved draft was found. Resume it?")) {
-        restoreAutoDraft(draft);
-    } else {
-        discard();
-    }
+    // Intentionally disabled: New Damage Report always opens fresh.
+    // Auto-save still protects the report while it is actively being created.
+    return;
 }
 
 document.addEventListener("input", function(event) {
@@ -2740,9 +2850,28 @@ window.addEventListener("beforeunload", function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     if (!document.getElementById("trainNo")) return;
-    setTimeout(promptResumeAutoDraft, 500);
+    // Resume/Discard popup intentionally removed. New Damage Report always starts fresh.
 });
 
+
+/* =========================================
+   FRESH NEW REPORT WORKFLOW
+   ========================================= */
+function startFreshNewDamageReport() {
+    const params = new URLSearchParams(window.location.search);
+    const historyMode = params.has("edit") || params.has("view") || params.has("print");
+    if (historyMode) return;
+    // New Damage Report must never reopen an old local draft.
+    localStorage.removeItem("PRDMS_CURRENT_REPORT");
+    localStorage.removeItem("PRDMS_EDIT_REPORT_ID");
+    clearAutoSavedDraft();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("trainNo") && window.location.pathname.includes("new-report.html")) {
+        startFreshNewDamageReport();
+    }
+});
 
 /* =====================================================
    MANUAL WAGON ENTRY
