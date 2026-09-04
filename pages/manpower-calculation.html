@@ -13,25 +13,25 @@
         @media print{
             @page{size:A4 landscape;margin:7mm 6mm}
             html,body{background:#fff!important;color:#000!important;font-family:"Times New Roman",Times,serif!important;margin:0!important;padding:0!important}
-            body{font-size:9px!important}
+            body{font-size:14px!important}
             .no-print,.screen-only{display:none!important}
             .official-print{display:block!important}
             .container-fluid{padding:0!important;margin:0!important;width:100%!important;max-width:none!important}
             .official-title{text-align:center;margin:0 0 5mm}
-            .official-title h3{font-size:15px;font-weight:700;margin:0 0 1mm}
-            .official-title .sub{font-size:10px;font-weight:700}
-            .official-meta{display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:5mm;font-size:10px}
+            .official-title h3{font-size:22px;font-weight:700;margin:0 0 1mm}
+            .official-title .sub{font-size:18px;font-weight:700}
+            .official-meta{display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:5mm;font-size:14px}
             .official-meta div{padding:0 4mm}.official-meta strong{font-weight:700}
-            .official-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5px}
+            .official-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:16px}
             .official-table th,.official-table td{border:1px solid #000;padding:2px 2.5px;text-align:center;vertical-align:middle;line-height:1.08;word-break:break-word;overflow-wrap:anywhere}
-            .official-table thead{display:table-header-group}.official-table tr{page-break-inside:avoid}
+            .official-table thead{display:table-header-group}.official-table tfoot{display:table-row-group!important}.official-table tr{page-break-inside:avoid}
             .official-table th{font-weight:700}
             .official-table .damage-cell{text-align:left}
-            .official-table th:nth-child(1){width:3.5%}.official-table th:nth-child(2){width:6%}.official-table th:nth-child(3){width:11%}.official-table th:nth-child(4){width:8%}.official-table th:nth-child(5){width:24%}.official-table th:nth-child(n+6){width:auto}.official-table .blank-group-column{font-size:0;padding:0}
-            .official-table .group-row th{font-size:8px}
-            .official-table .item-header th{font-size:7px;min-height:28px}
+            .official-table th:nth-child(1){width:3.5%}.official-table th:nth-child(2){width:6%}.official-table th:nth-child(3){width:11%}.official-table th:nth-child(4){width:10%}.official-table th:nth-child(5){width:22%}.official-table th:nth-child(n+6){width:auto}.official-table tbody td:nth-child(4){white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important}.official-table .blank-group-column{font-size:0;padding:0}
+            .official-table .group-row th{font-size:16px}
+            .official-table .item-header th{font-size:15px;min-height:28px}
             .official-table .official-total-row th,.official-table .official-group-total-row th,.official-table .grand-total-row th{font-weight:700}
-            .official-signatures{display:grid;grid-template-columns:1fr 1fr;margin-top:14mm;font-size:13px;font-weight:800}
+            .official-signatures{display:grid;grid-template-columns:1fr 1fr;margin-top:14mm;font-size:16px;font-weight:800}
             .official-signatures div:first-child{text-align:left}.official-signatures div:last-child{text-align:right}
             .official-grand-total-row .final-total-spacer {
     border: none !important;
@@ -107,3 +107,12 @@
 <script src="../js/manpower-calculation.js"></script>
 <div class="modal fade" id="changePasswordModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><form id="changePasswordForm"><div class="modal-header"><h5 class="modal-title">Change Password</h5><button class="btn-close" type="button" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="changePasswordMsg"></div><label class="form-label">Current Password</label><input id="currentPasswordInput" type="password" class="form-control mb-3" required><label class="form-label">New Password</label><input id="newPasswordInput" type="password" class="form-control" required></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary">Change Password</button></div></form></div></div></div><script>function openChangePassword(){const m=document.getElementById("changePasswordModal");if(!m)return;bootstrap.Modal.getOrCreateInstance(m).show()}document.addEventListener("DOMContentLoaded",()=>{const f=document.getElementById("changePasswordForm");if(f)f.onsubmit=e=>{e.preventDefault();const r=PRDMSAuth.changeOwnPassword(currentPasswordInput.value,newPasswordInput.value);const box=document.getElementById("changePasswordMsg");if(r.ok){box.innerHTML='<div class="alert alert-success">Password changed successfully.</div>';f.reset();setTimeout(()=>bootstrap.Modal.getOrCreateInstance(document.getElementById("changePasswordModal")).hide(),700)}else box.innerHTML='<div class="alert alert-danger">'+r.message+'</div>'}});</script></body>
 </html>
+<style>
+/* V5.6 PRECISE MANPOWER PRINT CORRECTION */
+@media print {
+  /* Only the three top print fields are enlarged by +5px. */
+  .official-print .official-meta {
+    font-size: 18px !important;
+  }
+}
+</style>

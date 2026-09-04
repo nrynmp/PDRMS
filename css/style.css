@@ -2383,3 +2383,406 @@ footer{
         white-space: normal !important;
     }
 }
+
+/* Company & Public Portals */
+.company-portal-page{min-height:100vh;background:linear-gradient(135deg,#edf4fa,#dfeaf5)}.portal-login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#102d46,#1c5b8f)}.portal-login-card{width:min(430px,100%);background:#fff;border-radius:22px;padding:40px;box-shadow:0 24px 70px #0003;text-align:center}.portal-login-card h2{color:#12304a;font-weight:800}.portal-login-card p{color:#718096}.portal-icon{font-size:42px;margin-bottom:12px}.back-login{display:inline-block;margin-top:20px;text-decoration:none;color:#2563eb}.public-portal-page{min-height:100vh;background:#f3f7fb}.public-hero{background:linear-gradient(135deg,#102d46 0%,#1b5c8f 55%,#2563eb 100%);color:#fff;padding:25px 0 55px;position:relative;overflow:hidden}.public-hero:after{content:'🚆';position:absolute;font-size:220px;right:8%;bottom:-85px;opacity:.08}.public-hero h1{font-weight:800;font-size:clamp(30px,5vw,52px);margin:16px 0 8px;color:#fff}.public-hero p{font-size:18px;color:#dbeafe}.public-badge{display:inline-block;border:1px solid #ffffff55;border-radius:30px;padding:8px 16px;font-size:12px;letter-spacing:1px}.public-content{margin-top:-28px;position:relative;z-index:2;padding-bottom:40px}.public-stat,.public-card{background:#fff;border:1px solid #dce5ef;border-radius:18px;box-shadow:0 12px 35px #12304a12}.public-stat{padding:24px;text-align:center}.public-stat-icon{font-size:28px;margin-bottom:8px}.public-stat strong{display:block;font-size:30px;color:#12304a}.public-stat span{font-size:12px;color:#718096;font-weight:700;text-transform:uppercase;letter-spacing:.6px}.public-card h4{color:#12304a;font-weight:800}.public-card li{margin:9px 0;color:#4a5568}.public-footer{text-align:center;padding:25px;color:#718096;font-size:12px}
+
+/* PDRMS Company & Public Intelligence Portals */
+.company-portal-page{background:#f3f6fb}.company-hero,.public-hero{background:linear-gradient(135deg,#071a33,#0b4f8a 55%,#1488cc);color:#fff}.company-hero h1,.public-hero h1{color:#fff;margin:.2rem 0}.eyebrow{font-size:.75rem;letter-spacing:.12em;font-weight:700;opacity:.75}.updated-label{font-size:.7rem;letter-spacing:.1em;opacity:.75}.company-panel,.public-card{border:0;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(15,35,60,.08);padding:24px}.company-panel h4{font-weight:800}.intel-stat{height:100%;background:#fff;border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(15,35,60,.08);text-align:center}.intel-stat span{font-size:1.4rem;display:block}.intel-stat strong{display:block;font-size:1.25rem;margin:7px 0;overflow-wrap:anywhere}.intel-stat small{color:#64748b;font-weight:700}.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.quick-action{background:linear-gradient(145deg,#fff,#f3f8ff);border:1px solid #e4edf8;border-radius:16px;padding:18px;text-decoration:none;color:#14213d;box-shadow:0 8px 22px rgba(15,35,60,.06)}.quick-action span{font-size:1.5rem;display:block}.quick-action b,.quick-action small{display:block}.quick-action small{color:#64748b;margin-top:4px}.trend-row{display:grid;grid-template-columns:80px 1fr 140px;gap:10px;align-items:center;margin:10px 0;font-size:.85rem}.trend-bars{height:18px;position:relative}.trend-bars i,.trend-bars em{display:block;height:7px;border-radius:5px;margin:2px 0;background:#0d6efd}.trend-bars em{background:#f59e0b}.rank-line{display:flex;justify-content:space-between;border-bottom:1px solid #edf0f4;padding:10px 0}.passport-hero{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#102a43,#1769aa);color:#fff;border-radius:16px;padding:24px}.passport-hero h2{color:#fff}.passport-tag{background:#ffffff22;padding:8px 12px;border-radius:99px}.passport-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}.passport-metrics div{background:#f6f9fd;padding:14px;border-radius:12px}.passport-metrics b,.passport-metrics span{display:block}.passport-metrics span{font-size:.75rem;color:#64748b}.public-content{margin-top:-25px;padding-bottom:45px}.public-badge{font-size:.8rem;letter-spacing:.12em;font-weight:700;opacity:.85}.public-hero{min-height:360px}.public-hero .lead{max-width:700px}.hero-actions{display:flex;gap:12px}.public-stat{background:#fff;border-radius:18px;padding:25px;text-align:center;box-shadow:0 12px 30px rgba(8,31,56,.13)}.public-stat-icon{font-size:1.8rem}.public-stat strong,.public-stat span{display:block}.public-stat strong{font-size:2rem}.public-stat span{color:#64748b;font-weight:700}.public-update{text-align:center;background:#ffffffcc;border-radius:12px;padding:10px;margin-bottom:15px;font-size:.85rem;color:#475569}.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}.feature-grid div{padding:14px;background:#f6f9fd;border-radius:12px}.feature-grid b,.feature-grid span{display:block}.feature-grid span{font-size:.85rem;color:#64748b}.public-stack div{padding:12px 0;border-bottom:1px solid #e9eef5}.public-stack span{display:block;color:#64748b;font-size:.9rem}.public-footer{background:#071a33;color:#fff;text-align:center;padding:22px}.portal-login-wrap{min-height:100vh;background:linear-gradient(135deg,#071a33,#0b4f8a);display:grid;place-items:center;padding:20px}.portal-login-card{width:min(430px,100%);background:#fff;border-radius:22px;padding:35px;text-align:center;box-shadow:0 25px 60px #0004}.portal-icon{font-size:3rem}.back-login{display:block;margin-top:16px}.company-portal-page .btn{width:auto}@media(max-width:768px){.quick-grid{grid-template-columns:repeat(2,1fr)}.passport-metrics{grid-template-columns:repeat(2,1fr)}.trend-row{grid-template-columns:65px 1fr}.trend-row b{grid-column:2}.company-hero .container{padding-top:20px!important}.public-hero{min-height:420px}}
+
+/* V5 STAFF READABILITY UPGRADE */
+#reportPreview, #printArea, .official-report{font-size:10.5px!important;}
+#reportPreview table, #printArea table, .official-report table{font-size:9.5px!important;}
+@media print{#reportPreview,#printArea,.official-report{font-size:10pt!important;}#reportPreview table,#printArea table,.official-report table{font-size:8.8pt!important;}}
+
+/* =====================================================
+   V5 PRINT READABILITY UPDATE
+   Only Damage Report table text enlarged for printing.
+   No application logic changed.
+   ===================================================== */
+@media print {
+    #wagonTable th,
+    #wagonTableHeader th,
+    #repairColumnHeaderRow th {
+        font-size: 11pt !important;
+        line-height: 1.12 !important;
+    }
+
+    #wagonTable tbody td,
+    #wagonTableBody td,
+    #wagonTotalRow td {
+        font-size: 11pt !important;
+        line-height: 1.15 !important;
+    }
+
+    /* Repair headings and values use the same readable print size */
+    #wagonTable th:nth-child(n+7),
+    #repairColumnHeaderRow th,
+    #wagonTable tbody td:nth-child(n+7),
+    #wagonTableBody td:nth-child(n+7) {
+        font-size: 11pt !important;
+    }
+}
+
+/* =====================================================
+   V5.3 FINAL PRINT FONT ENLARGEMENT
+   Appended last intentionally so it overrides all older
+   compact print rules.
+   ===================================================== */
+@media print {
+    /* DAMAGE REPORT: force every wagon-table heading and value larger */
+    #wagonTable,
+    #wagonTableHeader,
+    #wagonTableBody {
+        font-size: 12pt !important;
+    }
+
+    #wagonTableHeader th,
+    #wagonTable thead th,
+    #wagonTable th,
+    #repairColumnHeaderRow th,
+    #yardRepairHeader {
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+    }
+
+    #wagonTableBody td,
+    #wagonTable tbody td,
+    #wagonTable td,
+    #wagonTotalRow td,
+    #wagonTotalRow th,
+    #wagonTableBody td small,
+    #wagonTableBody td span,
+    #wagonTotalRow small,
+    #wagonTotalRow span {
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+    }
+
+    /* Narrow repair columns must also obey the same size */
+    #repairColumnHeaderRow th,
+    #wagonTableHeader th:nth-child(n+7),
+    #wagonTableBody td:nth-child(n+7):not(:last-child),
+    #wagonTable tbody td:nth-child(n+7):not(:last-child) {
+        font-size: 12pt !important;
+    }
+}
+
+
+/* =====================================================
+   V5.5 TARGETED PRINT CORRECTION
+   Keep existing 12pt Damage Report appearance.
+   Only enlarge the six main wagon columns that remained small.
+   Do NOT change repair columns or table widths.
+   ===================================================== */
+@media print {
+    /* Main Damage Report headings: Sl, O/Rly, Wagon No, Type, Incoming Damages, Remarks */
+    #wagonTableHeader th:nth-child(1),
+    #wagonTableHeader th:nth-child(2),
+    #wagonTableHeader th:nth-child(3),
+    #wagonTableHeader th:nth-child(4),
+    #wagonTableHeader th:nth-child(5),
+    #wagonTableHeader th:nth-child(6) {
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+    }
+
+    /* Matching entered data only for those six main columns */
+    #wagonTableBody td:nth-child(1),
+    #wagonTableBody td:nth-child(2),
+    #wagonTableBody td:nth-child(3),
+    #wagonTableBody td:nth-child(4),
+    #wagonTableBody td:nth-child(5),
+    #wagonTableBody td:nth-child(6) {
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+    }
+}
+
+/* =====================================================
+   V5.7 FINAL TARGETED PRINT READABILITY PATCH
+   Only the items specifically requested below are changed.
+   ===================================================== */
+
+@media print {
+    /* DAMAGE REPORT: O/Rly, Wagon No. and Type one point smaller to prevent line overlap */
+    #wagonTableHeader th:nth-child(2),
+    #wagonTableHeader th:nth-child(3),
+    #wagonTableHeader th:nth-child(4),
+    #wagonTableBody td:nth-child(2),
+    #wagonTableBody td:nth-child(3),
+    #wagonTableBody td:nth-child(4) {
+        font-size: 11pt !important;
+        line-height: 1.12 !important;
+    }
+
+    /* DAMAGE REPORT: Total row values must match the normal readable report values */
+    #wagonTotalRow td,
+    #wagonTotalRow th,
+    #wagonTableBody tr:last-child td,
+    #wagonTableBody tr:last-child th {
+        font-size: 12pt !important;
+        line-height: 1.12 !important;
+    }
+
+    /* DAMAGE REPORT PARTICULARS (the two information boxes) */
+    #printDamageParticulars,
+    #printDamageParticulars strong,
+    #printDamageParticulars span,
+    #printDamageParticulars .print-particulars-left div,
+    #printDamageParticulars .print-particulars-right div {
+        font-size: 12pt !important;
+        line-height: 1.15 !important;
+    }
+}
+
+/* =========================================
+   V5.12 – TARGETED FINAL PRINT TUNING
+   Base: approved V5.8 layout
+   ========================================= */
+@media print {
+    /* Damage report: only O/Rly, Wagon No. and Type reduced to 10pt */
+    #wagonTableHeader th:nth-child(2),
+    #wagonTableHeader th:nth-child(3),
+    #wagonTableHeader th:nth-child(4),
+    #wagonTableBody td:nth-child(2),
+    #wagonTableBody td:nth-child(3),
+    #wagonTableBody td:nth-child(4) {
+        font-size: 10pt !important;
+        line-height: 1.08 !important;
+    }
+
+    /* Keep Wagon No. and Type on one line where possible */
+    #wagonTableBody td:nth-child(3),
+    #wagonTableBody td:nth-child(4) {
+        white-space: nowrap !important;
+        word-break: normal !important;
+        overflow-wrap: normal !important;
+    }
+
+    /* Damage report first particulars tables: Train No., Loading Point, etc. */
+    #printDamageParticulars .print-particulars-left > div > strong,
+    #printDamageParticulars .print-particulars-right > div > strong,
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+        font-size: 13pt !important;
+        line-height: 1.12 !important;
+    }
+}
+
+/* =====================================================
+   V5.13 – DAMAGE REPORT PARTICULARS FINAL LAYOUT FIX
+   Only the top two particulars tables are adjusted.
+   Manpower and the main damage table are untouched.
+   ===================================================== */
+@media print {
+    #printDamageParticulars .print-particulars-grid {
+        grid-template-columns: 1fr 1fr !important;
+        column-gap: 4mm !important;
+    }
+
+    /* Give entered values more room while keeping requested 13pt readability */
+    #printDamageParticulars .print-particulars-left > div,
+    #printDamageParticulars .print-particulars-right > div {
+        grid-template-columns: 42% 58% !important;
+        min-height: 7mm !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div > strong,
+    #printDamageParticulars .print-particulars-right > div > strong,
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+        font-size: 13pt !important;
+        line-height: 1.12 !important;
+        padding: 0.8mm 1.5mm !important;
+        box-sizing: border-box !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+        white-space: normal !important;
+        overflow-wrap: normal !important;
+        word-break: normal !important;
+    }
+}
+
+
+/* =====================================================
+   V5.14 – FINAL DAMAGE REPORT PRINT FIX
+   Only Examination By display is adjusted here.
+   ===================================================== */
+@media print {
+    #printExaminedBy {
+        white-space: pre-line !important;
+        line-height: 1.35 !important;
+        display: block !important;
+    }
+    /* Keep each examiner on its own line when two names exist. */
+    #printExaminedBy br { display: block !important; }
+}
+
+
+/* V5.15 – FINAL TWO-EXAMINER PRINT FIX */
+@media print {
+    #printExaminedBy {
+        display: block !important;
+        white-space: normal !important;
+        line-height: 1.35 !important;
+    }
+    #printExaminedBy br {
+        display: block !important;
+        content: "" !important;
+        margin-bottom: 1.2mm !important;
+    }
+}
+
+/* =====================================================
+   V5.16 – FINAL PARTICULARS TABLE PARTITION LINE FIX
+   Keep the Examination By cell divider continuous when
+   two examiner names occupy two lines.
+   ===================================================== */
+@media print {
+    #printDamageParticulars .print-particulars-left > div,
+    #printDamageParticulars .print-particulars-right > div {
+        align-items: stretch !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div > strong,
+    #printDamageParticulars .print-particulars-right > div > strong {
+        display: flex !important;
+        align-items: center !important;
+        align-self: stretch !important;
+        height: auto !important;
+        border-right: 1px solid #000 !important;
+    }
+
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+        display: flex !important;
+        align-items: center !important;
+        align-self: stretch !important;
+        height: auto !important;
+    }
+}
+
+
+/* =====================================================
+   V5.18 – FINAL TWO-POINT PRINT CORRECTION
+   1) Examination By divider must reach full row height.
+   2) Every TOTAL value must print at the same size.
+   ===================================================== */
+@media print {
+    /* Remove the V5.17 artificial divider approach completely. */
+
+    /* Examination By is the last row of the right particulars table.
+       Use flex only for this row so the label cell and its border always
+       stretch to the full height of two examiner names. */
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        display: flex !important;
+        align-items: stretch !important;
+        min-height: 7mm !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child > strong {
+        display: flex !important;
+        flex: 0 0 42% !important;
+        width: 42% !important;
+        align-self: stretch !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        border-right: 1px solid #000 !important;
+        height: auto !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child > span {
+        display: block !important;
+        flex: 0 0 58% !important;
+        width: 58% !important;
+        box-sizing: border-box !important;
+        align-self: stretch !important;
+        border: none !important;
+    }
+
+    /* TOTAL row: force every visible total and nested value to the same size. */
+    #wagonTotalRow > td,
+    #wagonTotalRow > th,
+    #wagonTotalRow > td *,
+    #wagonTotalRow > th * {
+        font-size: 12pt !important;
+        line-height: 1.12 !important;
+        font-weight: bold !important;
+        vertical-align: middle !important;
+    }
+}
+
+/* V5.19: FINAL EXAMINATION BY DIVIDER FIX - only this row */
+@media print {
+  #printDamageParticulars .print-particulars-right > div:last-child {
+    /* Draw the divider as part of the row background so it always spans full row height */
+    background-image: linear-gradient(
+      to right,
+      transparent calc(47% - 0.5px),
+      #000 calc(47% - 0.5px),
+      #000 calc(47% + 0.5px),
+      transparent calc(47% + 0.5px)
+    ) !important;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100% !important;
+  }
+
+  /* Remove only the unreliable cell-height border on this one tall row */
+  #printDamageParticulars .print-particulars-right > div:last-child > strong {
+    border-right: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+}
+
+/* =====================================================
+   V5.20 – CLEAN EXAMINATION BY ROW FIX
+   Reduce Damage Report particulars from 13pt to 12pt and
+   use table-cell layout for the tall Examination By row.
+   ===================================================== */
+@media print {
+    /* User-approved readability with one-point reduction */
+    #printDamageParticulars .print-particulars-left > div > strong,
+    #printDamageParticulars .print-particulars-right > div > strong,
+    #printDamageParticulars .print-particulars-left > div > span,
+    #printDamageParticulars .print-particulars-right > div > span {
+        font-size: 12pt !important;
+        line-height: 1.12 !important;
+    }
+
+    /* Disable the V5.19 background divider on the Examination By row. */
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        display: table !important;
+        width: 100% !important;
+        table-layout: fixed !important;
+        background-image: none !important;
+        background: transparent !important;
+        border-bottom: none !important;
+    }
+
+    /* Real table cells guarantee one continuous partition line for both
+       one-examiner and two-examiner scenarios. */
+    #printDamageParticulars .print-particulars-right > div:last-child > strong {
+        display: table-cell !important;
+        width: 42% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-sizing: border-box !important;
+        vertical-align: middle !important;
+        border-right: 1px solid #000 !important;
+        padding: 0.8mm 1.5mm !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child > span {
+        display: table-cell !important;
+        width: 58% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        vertical-align: middle !important;
+        border: none !important;
+        padding: 0.8mm 1.5mm !important;
+    }
+}

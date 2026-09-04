@@ -2015,7 +2015,12 @@ function updateSecondExaminerPrint() {
     const value2 = source2 ? source2.value.trim() : "";
 
     if (destination) {
-        destination.textContent = [value1, value2].filter(Boolean).join("\n");
+        // Use real <br> elements instead of a newline so both examiners
+        // always print on separate lines.
+        destination.replaceChildren();
+        if (value1) destination.appendChild(document.createTextNode(value1));
+        if (value1 && value2) destination.appendChild(document.createElement("br"));
+        if (value2) destination.appendChild(document.createTextNode(value2));
     }
 
     const signatureSection = document.getElementById("printSignatureSection");
@@ -2023,7 +2028,6 @@ function updateSecondExaminerPrint() {
         signatureSection.classList.toggle("two-examiners", !!value2);
     }
 
-    /* CSS controls the print visibility so the @media print rule wins reliably. */
     if (signatureBox) {
         signatureBox.removeAttribute("style");
     }
@@ -2076,9 +2080,26 @@ document.addEventListener("DOMContentLoaded", function () {
    PRDMS REPORT ACTION BUTTONS
    ========================================= */
 
+
+/* V5 OFFICIAL REPORT REFERENCE NUMBER */
+function getReportCompanyCode(){
+  const first=(wagons||[]).find(w=>String(w?.orly||w?.owner||'').trim());
+  return String(first?.orly||first?.owner||'GENERAL').trim().toUpperCase().replace(/[^A-Z0-9]+/g,'');
+}
+function generateReportReference(){
+  const d=document.getElementById("reportDate")?.value ? new Date(document.getElementById("reportDate").value) : new Date();
+  const year=d.getFullYear(); const month=String(d.getMonth()+1).padStart(2,'0');
+  const company=getReportCompanyCode()||'GENERAL';
+  let reports=[]; try{reports=JSON.parse(localStorage.getItem('PRDMS_REPORT_HISTORY')||'[]')}catch(e){}
+  const prefix=`PDRMS/NRY/NMP/${year}/${month}/${company}/`;
+  const seq=reports.filter(r=>String(r.reportReference||'').startsWith(prefix)).length+1;
+  return prefix+String(seq).padStart(4,'0');
+}
+
 function collectReportData() {
 
     return {
+        reportReference: document.getElementById("reportReference")?.value.trim() || generateReportReference(),
         trainNo: document.getElementById("trainNo")?.value.trim() || "",
         reportDate: document.getElementById("reportDate")?.value || "",
         rakeID: document.getElementById("rakeID")?.value.trim() || "",
@@ -2338,10 +2359,28 @@ function saveAndExit() {
    SAVE & PRINT
    ========================================= */
 
+/* V5.15: one controlled print call for the whole page */
+let PRDMS_PRINT_IN_PROGRESS = false;
+let PRDMS_PRINT_RELEASE_TIMER = null;
+
+window.PRDMS_doPrintOnce = function () {
+    if (PRDMS_PRINT_IN_PROGRESS) return;
+
+    PRDMS_PRINT_IN_PROGRESS = true;
+    if (PRDMS_PRINT_RELEASE_TIMER) clearTimeout(PRDMS_PRINT_RELEASE_TIMER);
+
+    window.print();
+
+    // Release the lock after the browser returns from either Print or Cancel.
+    PRDMS_PRINT_RELEASE_TIMER = setTimeout(function () {
+        PRDMS_PRINT_IN_PROGRESS = false;
+    }, 1200);
+};
+
 function saveAndPrint() {
+    if (PRDMS_PRINT_IN_PROGRESS) return;
 
     const reportData = getReportData();
-
     reportData.reportStatus = "saved";
 
     localStorage.setItem(
@@ -2349,19 +2388,18 @@ function saveAndPrint() {
         JSON.stringify(reportData)
     );
 
-    /* Update print heading */
-    if (typeof updatePrintReportHeading === "function") {
-        updatePrintReportHeading();
-    }
+    if (typeof updatePrintReportHeading === "function") updatePrintReportHeading();
+    if (typeof updateAllPrintParticulars === "function") updateAllPrintParticulars();
+    if (typeof updateSecondExaminerPrint === "function") updateSecondExaminerPrint();
 
-    /* Give the page a moment to update */
-    setTimeout(function () {
-
-        window.print();
-
-    }, 150);
+    window.PRDMS_doPrintOnce();
 }
 
+window.addEventListener("afterprint", function () {
+    setTimeout(function () {
+        PRDMS_PRINT_IN_PROGRESS = false;
+    }, 300);
+});
 
 /* =========================================
    CANCEL

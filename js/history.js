@@ -447,7 +447,7 @@ function loadCurrentReportFromHistory() {
             if (target === "history") returnToHistory();
             else if (target === "new-report") localStorage.removeItem("PRDMS_RETURN_AFTER_PRINT");
         };
-        setTimeout(() => window.print(), 450);
+        window.PRDMS_doPrintOnce ? window.PRDMS_doPrintOnce() : window.print();
     }
 }
 
@@ -691,7 +691,7 @@ async function saveAndPrint() {
     }
 
     if (typeof updatePrintReportHeading === "function") updatePrintReportHeading();
-    setTimeout(() => window.print(), 150);
+    window.PRDMS_doPrintOnce ? window.PRDMS_doPrintOnce() : window.print();
 }
 
 /* Print Manpower from New Damage Report: preserve the current entered data and return here. */
