@@ -1052,7 +1052,7 @@ function getFittedColumnDisplay(wagon, type) {
         return `
             <div class="fitted-table-item">
                 <strong>
-                    ${Number(item.weightKg).toFixed(3)} kg
+                    ${Number(item.weightKg).toFixed(3)}&nbsp;kg
                 </strong>
                 <br>
                 <span>
@@ -1275,7 +1275,7 @@ function refreshWagonTable() {
         return `
             <td class="fitted-column">
                 <strong>
-                    ${totalWeight.toFixed(3)} kg
+                    ${totalWeight.toFixed(3)}&nbsp;kg
                 </strong>
                 <br>
                 <span>
@@ -1341,7 +1341,7 @@ function refreshWagonTable() {
         return `
             <td class="fitted-column">
                 <strong>
-                    ${totalWeight.toFixed(3)} kg
+                    ${totalWeight.toFixed(3)}&nbsp;kg
                 </strong>
                 <br>
                 <span>

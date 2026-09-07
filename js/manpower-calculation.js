@@ -160,6 +160,20 @@ function fittedWeight(wagon, type) {
         .reduce((sum, item) => sum + Number(item.weightKg || 0), 0);
 }
 
+// Keep the manpower calculation in kg, but retain the welding length
+// so the official print can show the same KG + WD CM information as
+// the Damage Report without affecting man-hour calculations.
+function fittedWeldingCm(wagon, type) {
+    if (!Array.isArray(wagon?.fittedDetails)) return 0;
+    return wagon.fittedDetails
+        .filter(item => normalise(item.item) === normalise(type))
+        .reduce((sum, item) => sum + Number(item.weldingCm || 0), 0);
+}
+
+function formatFittedPrintValue(weightKg, weldingCm) {
+    return `${Number(weightKg || 0).toFixed(3)} kg<br><span class="manpower-wd">WD ${Number(weldingCm || 0).toFixed(2)} cm</span>`;
+}
+
 function getQuantity(wagon, column) {
     if (column === "Panel Fitted" || column === "Floor Fitted") return fittedWeight(wagon, column);
     return Number(wagon?.repairs?.[column] || 0);
@@ -373,7 +387,9 @@ function renderOfficialPrint() {
         const valueFor = c => {
             const item = row.items.find(x => x.column === c);
             if (!item) return "0";
-            if (c === "Panel Fitted" || c === "Floor Fitted") return Number(item.quantity).toFixed(3);
+            if (c === "Panel Fitted" || c === "Floor Fitted") {
+                return formatFittedPrintValue(item.quantity, fittedWeldingCm(row.wagon, c));
+            }
             return formatNumber(item.quantity);
         };
         return `<tr>
@@ -388,6 +404,9 @@ function renderOfficialPrint() {
 
     const quantityTotal = c => calculation.wagonRows.reduce(
         (sum, row) => sum + (row.items.find(x => x.column === c)?.quantity || 0), 0
+    );
+    const weldingTotal = c => calculation.wagonRows.reduce(
+        (sum, row) => sum + ((c === "Panel Fitted" || c === "Floor Fitted") ? fittedWeldingCm(row.wagon, c) : 0), 0
     );
     const rateFor = c => {
         const map = MANPOWER_MAP[c];
@@ -406,7 +425,12 @@ function renderOfficialPrint() {
     foot.innerHTML = `
         <tr class="official-total-row">
             <th colspan="5">Total</th>
-            ${printCols.map(c => `<th>${formatPrintQuantity(quantityTotal(c), c)}</th>`).join("")}
+            ${printCols.map(c => {
+                if (c === "Panel Fitted" || c === "Floor Fitted") {
+                    return `<th>${formatFittedPrintValue(quantityTotal(c), weldingTotal(c))}</th>`;
+                }
+                return `<th>${formatPrintQuantity(quantityTotal(c), c)}</th>`;
+            }).join("")}
         </tr>
         <tr>
             <th colspan="5">Changed &amp; Repair Man Hrs. each items</th>

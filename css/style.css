@@ -2786,3 +2786,96 @@ footer{
         padding: 0.8mm 1.5mm !important;
     }
 }
+
+
+/* =====================================================
+   V5.7.3 – USER-REQUESTED TARGETED PRINT FIXES
+   Base table layout remains unchanged.
+   ===================================================== */
+@media print {
+    /* BLSS/BLSSA/BLSSB reports: give the 11-digit Wagon No. one extra
+       percent and take only that percent from Type. Repair columns stay untouched. */
+    #wagonTableHeader th:nth-child(3) { width: 11% !important; }
+    #wagonTableHeader th:nth-child(4) { width: 9% !important; }
+
+    /* Keep the 11-digit wagon number on one clean line. */
+    #wagonTableBody td:nth-child(3) {
+        white-space: nowrap !important;
+        font-size: 9.5pt !important;
+        letter-spacing: -0.05pt !important;
+    }
+
+    /* Panel/Floor fitted: keep number and kg together inside the same cell. */
+    #wagonTableBody td.fitted-column strong,
+    #wagonTotalRow td.fitted-column strong {
+        white-space: nowrap !important;
+        font-size: 10pt !important;
+    }
+
+    /* Manpower official print: KG and WD CM remain readable in fitted columns. */
+    #officialManpowerTable .manpower-wd {
+        white-space: nowrap !important;
+        font-size: 0.92em !important;
+    }
+}
+
+/* =====================================================
+   V5.7.9 – EXACT EXAMINATION BY DIVIDER + BOXNHL25T FIX
+   Only the two user-requested print corrections below.
+   ===================================================== */
+@media print {
+    /* Examination By: keep the existing row layout, but draw one real,
+       full-height partition at exactly the same 42% position as all rows. */
+    #printDamageParticulars .print-particulars-right > div:last-child {
+        display: grid !important;
+        grid-template-columns: 42% 58% !important;
+        position: relative !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        background: none !important;
+        background-image: none !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 42% !important;
+        width: 1px !important;
+        background: #000 !important;
+        z-index: 5 !important;
+        pointer-events: none !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child > strong {
+        display: flex !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: auto !important;
+        align-self: stretch !important;
+        align-items: center !important;
+        border-right: none !important;
+        vertical-align: middle !important;
+        box-sizing: border-box !important;
+    }
+
+    #printDamageParticulars .print-particulars-right > div:last-child > span {
+        display: block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        align-self: stretch !important;
+        border: none !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Only the long BOXNHL25T wagon type gets a tighter print fit.
+       Other wagon types keep their existing approved appearance. */
+    #wagonTableBody td:nth-child(4) {
+        font-size: 9pt !important;
+        letter-spacing: -0.25pt !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+    }
+}
