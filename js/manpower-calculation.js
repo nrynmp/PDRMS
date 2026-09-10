@@ -34,8 +34,8 @@ const DEFAULT_MANPOWER_ITEMS = [
 const MANPOWER_MAP = {
     "Door Repair": { item: "Door repair (Dummy/Door way side & Top Stiffener cut/Welded)", category: "Repair", print: "Door repair", group: "repaired" },
     "Panel Repair": { item: "Panel repair (Welded)", category: "Repair", print: "Panel patch", group: "repaired" },
-    "Lock Lifter Handle Change": { item: "Lock lifter assembly", category: "Changed", print: "Lock lifter Handle Fitted", group: "changed" },
-    "Lock Lifter Handle Repair": { item: "Lock lifter assembly", category: "Repair", print: "Lock lifter Handle repair", group: "repaired" },
+    "Lock Lifter Handle Change": { item: "Lock lifter assembly", category: "Changed", print: "CBC (LLH) Operating Handle Fitted", group: "changed" },
+    "Lock Lifter Handle Repair": { item: "Lock lifter assembly", category: "Repair", print: "CBC (LLH) Operating Handle Repair", group: "repaired" },
     "K/Pin Fitted": { item: "Knuckle pin with APD", category: "Changed", print: "Knuckle pin fitted", group: "changed" },
     "Side Frame Key with Nut & Bolt Fitted": { item: "SIDE FRAME KEY WITH BOLT", category: "Changed", print: "Side Frame Key with Nut & Bolt Fitted", group: "changed" },
     "Panel Fitted": { item: "PANEL PATCH", category: "Changed", print: "Panel patch fitted (kg)", group: "changed" },

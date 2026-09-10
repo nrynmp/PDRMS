@@ -4,6 +4,17 @@ console.log("PRDMS Script Loaded");
 // PRDMS Repair Columns
 // ===============================
 
+
+// Display-only labels for repair columns. Internal keys remain unchanged
+// so existing saved reports and calculations continue to work.
+function getRepairColumnDisplayName(column) {
+    const labels = {
+        "Lock Lifter Handle Change": "CBC (LLH) Operating Handle Change",
+        "Lock Lifter Handle Repair": "CBC (LLH) Operating Handle Repair"
+    };
+    return labels[column] || column;
+}
+
 let repairColumns = [
 
     "Door Repair",
@@ -543,7 +554,7 @@ function generateRepairFields() {
                     <div class="col-md-10">
 
                         <strong>
-                            ${column}
+                            ${getRepairColumnDisplayName(column)}
                         </strong>
 
                         <div
@@ -1012,7 +1023,7 @@ function refreshWagonTableHeader() {
 
         repairRow.innerHTML += `
             <th>
-                ${column}
+                ${getRepairColumnDisplayName(column)}
             </th>
         `;
 
@@ -1520,7 +1531,7 @@ function refreshRepairColumnPopup() {
             <tr>
 
                 <td>
-                    ${column}
+                    ${getRepairColumnDisplayName(column)}
                 </td>
 
                 <td>
