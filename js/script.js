@@ -9,8 +9,8 @@ console.log("PRDMS Script Loaded");
 // so existing saved reports and calculations continue to work.
 function getRepairColumnDisplayName(column) {
     const labels = {
-        "Lock Lifter Handle Change": "CBC (LLH) Operating Handle Change",
-        "Lock Lifter Handle Repair": "CBC (LLH) Operating Handle Repair"
+        "Lock Lifter Handle Change": "CBC Operating Handle (LLH) Change",
+        "Lock Lifter Handle Repair": "CBC Operating Handle (LLH) Repair"
     };
     return labels[column] || column;
 }

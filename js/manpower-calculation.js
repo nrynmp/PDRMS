@@ -34,13 +34,79 @@ const DEFAULT_MANPOWER_ITEMS = [
 const MANPOWER_MAP = {
     "Door Repair": { item: "Door repair (Dummy/Door way side & Top Stiffener cut/Welded)", category: "Repair", print: "Door repair", group: "repaired" },
     "Panel Repair": { item: "Panel repair (Welded)", category: "Repair", print: "Panel patch", group: "repaired" },
-    "Lock Lifter Handle Change": { item: "Lock lifter assembly", category: "Changed", print: "CBC (LLH) Operating Handle Fitted", group: "changed" },
-    "Lock Lifter Handle Repair": { item: "Lock lifter assembly", category: "Repair", print: "CBC (LLH) Operating Handle Repair", group: "repaired" },
+    "Lock Lifter Handle Change": { item: "Lock lifter assembly", category: "Changed", print: "CBC Operating Handle (LLH) Change", group: "changed" },
+    "CBC Operating Handle (LLH) Change": { item: "Lock lifter assembly", category: "Changed", print: "CBC Operating Handle (LLH) Change", group: "changed" },
+    "Lock Lifter Handle Repair": { item: "Lock lifter assembly", category: "Repair", print: "CBC Operating Handle (LLH) Repair", group: "repaired" },
+    "CBC Operating Handle (LLH) Repair": { item: "Lock lifter assembly", category: "Repair", print: "CBC Operating Handle (LLH) Repair", group: "repaired" },
     "K/Pin Fitted": { item: "Knuckle pin with APD", category: "Changed", print: "Knuckle pin fitted", group: "changed" },
     "Side Frame Key with Nut & Bolt Fitted": { item: "SIDE FRAME KEY WITH BOLT", category: "Changed", print: "Side Frame Key with Nut & Bolt Fitted", group: "changed" },
     "Panel Fitted": { item: "PANEL PATCH", category: "Changed", print: "Panel patch fitted (kg)", group: "changed" },
     "Floor Fitted": { item: "Floor repair (Welded)", category: "Changed", print: "Floor patch fitted (kg)", group: "changed" }
 };
+
+// Additional damage columns can be created from the Repair Columns manager.
+// Manpower must not silently ignore those columns.  This resolver maps a
+// saved PDRMS column to the Manpower Master by exact name first, then by
+// sensible aliases/keywords.  Existing standard mappings above always win.
+function resolveManpowerMapping(column) {
+    if (MANPOWER_MAP[column]) return MANPOWER_MAP[column];
+
+    const name = String(column || '').trim();
+    const n = normalise(name);
+    if (!n) return null;
+
+    const aliases = {
+        'cbc operating handle (llh) change': 'Lock Lifter Handle Change',
+        'cbc operating handle (llh) repair': 'Lock Lifter Handle Repair',
+        'lock lifter handle change': 'Lock Lifter Handle Change',
+        'lock lifter handle repair': 'Lock Lifter Handle Repair',
+        'knuckle pin fitted': 'K/Pin Fitted',
+        'side frame key with nut & bolt fitted': 'Side Frame Key with Nut & Bolt Fitted'
+    };
+    if (aliases[n]) return MANPOWER_MAP[aliases[n]];
+
+    // Match directly to a Manpower Master item.  This supports user-added
+    // columns such as Bearing piece, Control rod, ELB HANDLE, etc.
+    let master = DEFAULT_MANPOWER_ITEMS;
+    try {
+        const saved = localStorage.getItem('PRDMS_MANPOWER_MASTER');
+        if (saved) master = JSON.parse(saved);
+    } catch (_) {}
+
+    const exact = master.find(m => normalise(m.item) === n);
+    if (exact) {
+        const category = chooseMasterCategory(exact, n);
+        return { item: exact.item, category, print: name, group: category === 'Repair' ? 'repaired' : 'changed' };
+    }
+
+    // Common wording differences between Damage Report columns and Master.
+    const clean = v => normalise(v)
+        .replace(/\b(fitted|fit|change|changed|replacement|replaced|repair|repaired|with|nut|bolt)\b/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+    const cn = clean(name);
+    const partial = master.find(m => {
+        const mn = clean(m.item);
+        return mn && (cn === mn || cn.includes(mn) || mn.includes(cn));
+    });
+    if (partial) {
+        const category = chooseMasterCategory(partial, n);
+        return { item: partial.item, category, print: name, group: category === 'Repair' ? 'repaired' : 'changed' };
+    }
+
+    return null;
+}
+
+function chooseMasterCategory(masterItem, columnName) {
+    const n = normalise(columnName);
+    if (/\b(repair|repaired|weld|welded|straight|twist)\b/.test(n) && masterItem.repair != null) return 'Repair';
+    if (/\b(change|changed|change[d]?|fitted|fit|replace|replaced|pin|piece|spring)\b/.test(n) && masterItem.changed != null) return 'Changed';
+    if (masterItem.changed != null && masterItem.repair == null) return 'Changed';
+    if (masterItem.repair != null && masterItem.changed == null) return 'Repair';
+    // If both rates exist and wording is neutral, preserve the safer existing
+    // convention: a normal repair column uses Repair.
+    return masterItem.repair != null ? 'Repair' : 'Changed';
+}
+
 
 let currentReport = null;
 let calculation = null;
@@ -176,7 +242,31 @@ function formatFittedPrintValue(weightKg, weldingCm) {
 
 function getQuantity(wagon, column) {
     if (column === "Panel Fitted" || column === "Floor Fitted") return fittedWeight(wagon, column);
-    return Number(wagon?.repairs?.[column] || 0);
+    const repairs = wagon?.repairs || {};
+    const direct = Number(repairs[column] || 0);
+    if (direct > 0) return direct;
+    // Case-insensitive/spacing-safe fallback for older saved reports.
+    const target = normalise(column);
+    const key = Object.keys(repairs).find(k => normalise(k) === target);
+    return key ? Number(repairs[key] || 0) : 0;
+}
+
+function getAllReportColumns(wagons) {
+    const result = [];
+    const add = c => {
+        if (!c || result.includes(c)) return;
+        result.push(c);
+    };
+    (Array.isArray(currentReport?.repairColumns) ? currentReport.repairColumns : []).forEach(add);
+    wagons.forEach(w => Object.keys(w?.repairs || {}).forEach(add));
+    return result;
+}
+
+function getUsedColumns(wagons) {
+    return getAllReportColumns(wagons).filter(column =>
+        wagons.some(wagon => getQuantity(wagon, column) > 0 ||
+            ((column === 'Panel Fitted' || column === 'Floor Fitted') && fittedWeight(wagon, column) > 0))
+    );
 }
 
 function formatDateDDMMYYYY(value) {
@@ -255,8 +345,13 @@ function calculateManpower() {
         columns.forEach(column => {
             const quantity = getQuantity(wagon, column);
             if (quantity <= 0) return;
-            const mapping = MANPOWER_MAP[column];
-            if (!mapping) return;
+            const mapping = resolveManpowerMapping(column);
+            if (!mapping) {
+                // Keep an unknown populated damage item visible rather than silently dropping it.
+                rowItems.push({ column, quantity, rate: null, total: 0, category: "Unmapped", mapping: { print: column, item: column, category: "Unmapped", group: "unmapped" } });
+                unrated.add(column);
+                return;
+            }
             const rate = findMasterRate(mapping.item, mapping.category);
             if (rate === null) {
                 unrated.add(column);
@@ -317,44 +412,49 @@ function renderSummary() {
 }
 
 function getOfficialPrintColumns(wagons) {
-    // Official PDRMS print order. Populated columns are always retained;
-    // unused columns are added only until the minimum of six is reached.
+    // PRINT MUST USE THE SAME DYNAMIC COLUMNS THAT THE MANPOWER TABLE USES.
+    // Do not filter them through the old hard-coded MANPOWER_MAP.
+    const actual = Array.isArray(calculation?.columns) ? calculation.columns.slice() : getAllReportColumns(wagons);
+
+    // Keep the official departmental order for the standard items, then append
+    // every additional populated Repair Column in the order it was saved.
     const officialOrder = [
-        "Door Repair",
-        "Panel Repair",
-        "Lock Lifter Handle Repair",
-        "K/Pin Fitted",
-        "Floor Fitted",
-        "Side Frame Key with Nut & Bolt Fitted",
-        "Lock Lifter Handle Change",
+        "Door Repair", "Panel Repair", "Lock Lifter Handle Repair", "K/Pin Fitted",
+        "Floor Fitted", "Side Frame Key with Nut & Bolt Fitted",
+        "Lock Lifter Handle Change", "CBC Operating Handle (LLH) Change",
         "Panel Fitted"
     ];
+    const selected = [];
+    const add = c => {
+        if (!c || selected.includes(c)) return;
+        if (actual.includes(c) || wagons.some(w => getQuantity(w, c) > 0)) selected.push(c);
+    };
+    officialOrder.forEach(add);
+    actual.forEach(add);
 
-    const reportOrder = Array.isArray(currentReport?.repairColumns)
-        ? currentReport.repairColumns
-        : [];
+    // Preserve the six-column minimum only when fewer than six real items exist.
+    // Once six or more real items exist, print all real items and nothing else.
+    const populated = selected.filter(c => wagons.some(w => getQuantity(w, c) > 0));
+    if (populated.length >= 6) return populated;
 
-    // Prefer the official departmental order, while still allowing any
-    // recognised PDRMS repair/change column from the current report.
-    const candidates = [];
-    officialOrder.forEach(column => {
-        if (MANPOWER_MAP[column] && !candidates.includes(column)) candidates.push(column);
-    });
-    reportOrder.forEach(column => {
-        if (MANPOWER_MAP[column] && !candidates.includes(column)) candidates.push(column);
-    });
-
-    const populated = candidates.filter(column =>
-        wagons.some(wagon => getQuantity(wagon, column) > 0)
-    );
-
-    const selected = [...populated];
-    for (const column of candidates) {
-        if (selected.length >= 6) break;
-        if (!selected.includes(column)) selected.push(column);
+    const result = [...populated];
+    for (const c of selected) {
+        if (result.length >= 6) break;
+        if (!result.includes(c)) result.push(c);
     }
+    return result;
+}
 
-    return selected;
+function printMapping(column) {
+    const item = calculation?.wagonRows
+        ?.flatMap(row => row.items || [])
+        ?.find(x => x.column === column && x.mapping)?.mapping;
+    return item || resolveManpowerMapping(column) || {
+        item: column,
+        category: /repair|repaired|weld/i.test(String(column)) ? "Repair" : "Changed",
+        print: column,
+        group: /repair|repaired|weld/i.test(String(column)) ? "repaired" : "changed"
+    };
 }
 
 function renderOfficialPrint() {
@@ -364,8 +464,11 @@ function renderOfficialPrint() {
     const foot = document.getElementById("officialManpowerFoot");
 
     const cols = getOfficialPrintColumns(calculation.wagonRows.map(row => row.wagon));
-    const repaired = cols.filter(c => MANPOWER_MAP[c]?.group === "repaired");
-    const changed = cols.filter(c => MANPOWER_MAP[c]?.group === "changed");
+    const repaired = cols.filter(c => printMapping(c).group === "repaired");
+    // Anything that is not explicitly a Repair is treated as Changed for the
+    // official two-group print. This prevents valid dynamically-added items
+    // from disappearing just because they were not in the old map.
+    const changed = cols.filter(c => !repaired.includes(c));
     const printCols = [...repaired, ...changed];
 
     head.innerHTML = `
@@ -379,8 +482,8 @@ function renderOfficialPrint() {
             <th colspan="${Math.max(changed.length, 1)}">Items changed (Qty)</th>
         </tr>
         <tr class="item-header">
-            ${repaired.length ? repaired.map(c => `<th>${escapeHtml(MANPOWER_MAP[c].print)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
-            ${changed.length ? changed.map(c => `<th>${escapeHtml(MANPOWER_MAP[c].print)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
+            ${repaired.length ? repaired.map(c => `<th>${escapeHtml(printMapping(c).print || c)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
+            ${changed.length ? changed.map(c => `<th>${escapeHtml(printMapping(c).print || c)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
         </tr>`;
 
     body.innerHTML = calculation.wagonRows.map((row, index) => {
@@ -409,16 +512,13 @@ function renderOfficialPrint() {
         (sum, row) => sum + ((c === "Panel Fitted" || c === "Floor Fitted") ? fittedWeldingCm(row.wagon, c) : 0), 0
     );
     const rateFor = c => {
-        const map = MANPOWER_MAP[c];
-        return findMasterRate(map.item, map.category);
+        const map = printMapping(c);
+        return map && map.item && map.category !== "Unmapped" ? findMasterRate(map.item, map.category) : null;
     };
     const manHourTotal = c => calculation.wagonRows.reduce(
         (sum, row) => sum + (row.items.find(x => x.column === c)?.total || 0), 0
     );
 
-    // The official format has exactly three calculation rows below the
-    // wagon data: Total, Changed & Repair Man Hrs. each items, Total Man Hrs.
-    // There is deliberately NO extra grand-total row below them.
     const repairGrandTotal = repaired.reduce((sum, c) => sum + manHourTotal(c), 0);
     const changedGrandTotal = changed.reduce((sum, c) => sum + manHourTotal(c), 0);
 
@@ -464,7 +564,7 @@ function renderUnrated() {
     const list = document.getElementById("unratedItems");
     if (!calculation.unrated.length) { box.classList.add("d-none"); return; }
     box.classList.remove("d-none");
-    list.textContent = calculation.unrated.map(c => MANPOWER_MAP[c]?.print || c).join(", ");
+    list.textContent = calculation.unrated.map(c => resolveManpowerMapping(c)?.print || c).join(", ");
 }
 
 function clearTables() {

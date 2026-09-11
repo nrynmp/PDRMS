@@ -1,14 +1,12 @@
-let wagonReports=[]; let allCompanyReports=[];
-async function loadPassport(){
- const no=document.getElementById('wagon').value.trim(); const out=document.getElementById('passport');
- if(!no){out.innerHTML='<div class="alert alert-warning">Please enter a wagon number.</div>';return}
- const hits=wagonReports.flatMap(r=>(r.wagons||[]).filter(w=>String(w.wagonNo||w.wagonNumber||'')===no).map(w=>({r,w})));
- if(!hits.length){
-   const existsElsewhere=allCompanyReports.some(r=>(r.wagons||[]).some(w=>String(w.wagonNo||w.wagonNumber||'')===no));
-   out.innerHTML=`<div class="card"><div class="card-body text-center py-4"><h5>${existsElsewhere?'🚫 Not in Your Company’s Wagon List in NRY/NMP':'No Wagon Record Found'}</h5><p class="text-muted mb-0">${existsElsewhere?'This wagon is not associated with your company records in NRY/NMP.':'No matching wagon record is available in the PDRMS database.'}</p></div></div>`;
-   return;
- }
- const defects={};hits.forEach(x=>wagonDamages(x.w,x.r).forEach(d=>defects[d.k]=(defects[d.k]||0)+d.v));
- out.innerHTML=`<div class="card"><div class="card-body"><div class="d-flex justify-content-between flex-wrap gap-2"><div><h4>🚃 Wagon Damage Passport</h4><h5>Wagon No: ${esc(no)}</h5></div><span class="badge text-bg-primary align-self-start">${hits.length} record(s)</span></div><p>Times Recorded: <b>${hits.length}</b></p><h5>Damage Timeline</h5><ul>${hits.map(x=>`<li>${esc(reportDate(x.r))} — ${wagonDamages(x.w,x.r).map(d=>esc(d.k)+': '+d.v).join(', ')||'Damage details not quantified'}</li>`).join('')}</ul><h5>Repeated Defects</h5>${Object.entries(defects).sort((a,b)=>b[1]-a[1]).map(x=>`<div>${esc(x[0])}: <b>${x[1]}</b></div>`).join('')||'<div class="text-muted">No quantified repeated defects available.</div>'}</div></div>`;
-}
-(async()=>{const u=PRDMSAuth.current();if(!u||u.role!=='Company'){location.replace('../login.html');return}const aliases=(PDRMS_COMPANIES[u.companyId||u.id]?.aliases||[]).map(x=>x.toUpperCase());allCompanyReports=await portalReports();wagonReports=allCompanyReports.filter(r=>aliases.includes(reportOwner(r)))})();
+/* PDRMS Wagon Intelligence - Admin/User/Company compatible */
+let wagonReportsMI=[], allReportsMI=[];
+const WAGON_LABELS={"Lock Lifter Handle Change":"CBC Operating Handle (LLH) Change","Lock Lifter Handle Repair":"CBC Operating Handle (LLH) Repair"};
+function wEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function wArr(v){if(Array.isArray(v))return v;if(typeof v==='string'){try{const x=JSON.parse(v);return Array.isArray(x)?x:[]}catch(_){return[]}}return[]}
+function wLabel(v){return WAGON_LABELS[String(v||'').trim()]||String(v||'').trim()}
+function wOwner(r){return typeof reportOwner==='function'?String(reportOwner(r)||'').toUpperCase():String(r.owner||r.rly||r.company||'UNKNOWN').toUpperCase()}
+function wDate(r){return String(r.reportDate||r.savedAt||'').slice(0,10)||'—'}
+function wAllowed(r){const u=PRDMSAuth.current();if(!u)return false;if(u.role!=='Company')return true;const aliases=(PDRMS_COMPANIES[u.companyId||u.id]?.aliases||[]).map(x=>String(x).toUpperCase());return aliases.includes(wOwner(r));}
+async function initWagon(){const u=PRDMSAuth.current();if(!u){location.replace('../login.html');return}try{allReportsMI=await portalReports()}catch(_){allReportsMI=[]}allReportsMI=allReportsMI.map(r=>({...r,wagons:wArr(r.wagons)}));wagonReportsMI=allReportsMI.filter(wAllowed);}
+function loadPassport(){const no=document.getElementById('wagon').value.trim();const out=document.getElementById('passport');if(!no){out.innerHTML='<div class="alert alert-warning">Please enter a wagon number.</div>';return}const hits=wagonReportsMI.flatMap(r=>r.wagons.filter(w=>String(w.wagonNo||w.wagonNumber||'').trim()===no).map(w=>({r,w})));if(!hits.length){out.innerHTML='<div class="alert alert-warning">No matching wagon record found in the available PDRMS data.</div>';return}const defects={};hits.forEach(x=>(typeof wagonDamages==='function'?wagonDamages(x.w,x.r):[]).forEach(d=>{const k=wLabel(d.k),v=Number(d.v||0);if(k&&v)defects[k]=(defects[k]||0)+v;}));out.innerHTML=`<div class="card"><div class="card-body"><div class="d-flex justify-content-between flex-wrap gap-2"><div><div class="text-muted small">WAGON INTELLIGENCE</div><h3>Wagon No: ${wEsc(no)}</h3></div><span class="badge text-bg-primary align-self-start">${hits.length} record(s)</span></div><p>Owner / source: <b>${wEsc(wOwner(hits[0].r))}</b></p><h5>Damage Timeline</h5><ul>${hits.slice().sort((a,b)=>wDate(b.r).localeCompare(wDate(a.r))).map(x=>`<li>${wEsc(wDate(x.r))} — Train ${wEsc(x.r.trainNo||'—')} — ${(typeof wagonDamages==='function'?wagonDamages(x.w,x.r):[]).map(d=>wEsc(wLabel(d.k))+': '+d.v).join(', ')||'Damage details not quantified'}</li>`).join('')}</ul><h5>Repeated Defects</h5>${Object.entries(defects).sort((a,b)=>b[1]-a[1]).map(x=>`<div class="d-flex justify-content-between border-bottom py-2"><span>${wEsc(x[0])}</span><b>${x[1]}</b></div>`).join('')||'<div class="text-muted">No quantified repeated defects available.</div>'}</div></div>`;}
+document.addEventListener('DOMContentLoaded',initWagon);
