@@ -186,7 +186,7 @@ section.mt-4{
 </style>
 
 </head><body><script src="js/cloud.js"></script><script src="js/auth.js"></script>
-<div class="app-shell"><aside class="app-sidebar"><div class="sidebar-brand"><div class="brand-icon"><i class="bi bi-train-front-fill"></i></div><div><strong>PRDMS</strong><small>South Eastern Railway</small></div></div><div class="sidebar-label">MAIN MENU</div><a class="side-link active" href="index.html"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></a><a class="side-link" href="pages/new-report.html"><i class="bi bi-file-earmark-plus"></i><span>New Damage Report</span></a><a class="side-link" href="pages/damage-history.html"><i class="bi bi-clock-history"></i><span>Damage Report History</span></a><a class="side-link" href="pages/manpower-calculation.html"><i class="bi bi-calculator"></i><span>Manpower Calculation</span></a><a class="side-link" href="pages/manpower-master.html"><i class="bi bi-people"></i><span>Manpower Master</span></a><a class="side-link admin-only" href="pages/user-management.html"><i class="bi bi-person-gear"></i><span>User Management</span></a><div class="sidebar-bottom"><div class="sidebar-label">SYSTEM</div><button class="side-link side-logout" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i><span>Logout</span></button></div></aside>
+<div class="app-shell"><aside class="app-sidebar"><div class="sidebar-brand"><div class="brand-icon"><i class="bi bi-train-front-fill"></i></div><div><strong>PRDMS</strong><small>South Eastern Railway</small></div></div><div class="sidebar-label">MAIN MENU</div><a class="side-link active" href="index.html"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></a><a class="side-link" href="pages/new-report.html"><i class="bi bi-file-earmark-plus"></i><span>New Damage Report</span></a><a class="side-link" href="pages/damage-history.html"><i class="bi bi-clock-history"></i><span>Damage Report History</span></a><a class="side-link" href="pages/manpower-calculation.html"><i class="bi bi-calculator"></i><span>Manpower Calculation</span></a><a class="side-link" href="pages/manpower-master.html"><i class="bi bi-people"></i><span>Manpower Master</span></a><a class="side-link admin-only" href="pages/management-dashboard.html"><i class="bi bi-bar-chart-line-fill"></i><span>Management Intelligence</span></a><a class="side-link admin-only" href="pages/user-management.html"><i class="bi bi-person-gear"></i><span>User Management</span></a><div class="sidebar-bottom"><div class="sidebar-label">SYSTEM</div><button class="side-link side-logout" onclick="openChangePassword()"><i class="bi bi-key"></i></button><button type="button" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i><span>Logout</span></button></div></aside>
 <main class="app-main"><header class="app-topbar"><div><button class="sidebar-mobile-toggle d-lg-none" id="sidebarToggle"><i class="bi bi-list"></i></button><div class="page-breadcrumb">PRDMS / <span>Dashboard</span></div><h2>Private Rake Damage Management System</h2></div><div class="user-profile"><div class="user-avatar"><i class="bi bi-person"></i></div><div><strong data-user-name>Administrator</strong><small data-user-role>Admin</small></div><button class="icon-logout" onclick="PRDMSAuth.logout()"><i class="bi bi-box-arrow-right"></i></button></div></header>
 <section class="welcome-banner"><div><div class="eyebrow">SOUTH EASTERN RAILWAY • NRY/NMP</div><h1>Good day, <span data-user-name>Administrator</span>.</h1><p>Manage private rake damage reports from BPC import through manpower calculation and report history.</p></div><div class="welcome-train"><i class="bi bi-train-front-fill"></i></div></section>
 <section class="stats-grid"><div class="stat-card"><div class="stat-icon blue"><i class="bi bi-files"></i></div><div><span>Total Reports</span><strong id="statReports">0</strong></div></div><div class="stat-card"><div class="stat-icon green"><i class="bi bi-train-freight-front"></i></div><div><span>Total Wagons</span><strong id="statWagons">0</strong></div></div><div class="stat-card"><div class="stat-icon orange"><i class="bi bi-tools"></i></div><div><span>Total Y/R Wagons</span><strong id="statYR">0</strong></div></div><div class="stat-card"><div class="stat-icon purple"><i class="bi bi-calendar-check"></i></div><div><span>This Month Reports</span><strong id="statMonth">0</strong></div></div><div class="stat-card"><div class="stat-icon teal"><i class="bi bi-clock-history"></i></div><div><span>This Month Man-Hours</span><strong id="statManHours">0.00</strong></div></div></section>
@@ -222,18 +222,67 @@ section.mt-4{
 (function () {
     const charts = [];
 
+    let dashboardReports = [];
+    try {
+        const initialCache = JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY") || "[]");
+        dashboardReports = Array.isArray(initialCache) ? initialCache : [];
+    } catch (_) { dashboardReports = []; }
+    window.__PDRMS_DASHBOARD_REPORTS__ = dashboardReports;
+
     function getReports() {
+        if (Array.isArray(dashboardReports)) return dashboardReports;
         try {
             const data = JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY") || "[]");
             return Array.isArray(data) ? data : [];
         } catch (e) { return []; }
     }
 
+    function setDashboardSyncStatus(message, ok) {
+        const el = document.getElementById("dashboardSyncStatus");
+        if (!el) return;
+        el.textContent = message;
+        el.className = "small mb-3 " + (ok ? "text-success" : "text-warning");
+    }
+
+    async function syncDashboardReports() {
+        // Always try the central database first. LocalStorage is only a fallback
+        // when the central API is unavailable. This prevents different devices
+        // from displaying different report counts.
+        try {
+            if (!window.PRDMSCloud || typeof PRDMSCloud.getReports !== "function") {
+                throw new Error("Central database bridge unavailable");
+            }
+            const live = await Promise.race([
+                PRDMSCloud.getReports(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error("Central database timeout")), 10000))
+            ]);
+            if (!Array.isArray(live)) throw new Error("Central database returned no report list");
+            dashboardReports = live;
+            window.__PDRMS_DASHBOARD_REPORTS__ = live;
+            setDashboardSyncStatus("● Live data • " + live.length + " reports • Updated " + new Date().toLocaleString("en-IN"), true);
+            return true;
+        } catch (error) {
+            console.warn("PDRMS Dashboard central sync failed:", error);
+            try {
+                const cached = JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY") || "[]");
+                dashboardReports = Array.isArray(cached) ? cached : [];
+            } catch (_) { dashboardReports = []; }
+            window.__PDRMS_DASHBOARD_REPORTS__ = dashboardReports;
+            setDashboardSyncStatus(
+                dashboardReports.length
+                    ? "● Cached data • " + dashboardReports.length + " reports • Central sync unavailable"
+                    : "● No report data available • Central sync unavailable",
+                false
+            );
+            return false;
+        }
+    }
+
     const DEFAULT_RATES = {
         "Door Repair": 0.83,
         "Panel Repair": 0.58,
-        "Lock Lifter Handle Change": 1.59,
-        "Lock Lifter Handle Repair": 0.25,
+        "CBC (LLH) Operating Handle Change": 1.59,
+        "CBC (LLH) Operating Handle Repair": 0.25,
         "K/Pin Fitted": 0.20,
         "Side Frame Key with Nut & Bolt Fitted": 0.15
     };
@@ -343,9 +392,18 @@ section.mt-4{
         makeChart("manhoursChart", "line", labels, monthKeys.map(k => Number((byMonth[k]?.hours || 0).toFixed(2))), "Man-Hours");
     }
 
-    updateDashboardStats();
-    updateCharts();
-    window.addEventListener("storage", () => { updateDashboardStats(); updateCharts(); });
+    async function initDashboard() {
+        // Render cached data immediately, then replace it with live central data.
+        updateDashboardStats();
+        updateCharts();
+        await syncDashboardReports();
+        updateDashboardStats();
+        updateCharts();
+        updateReportStatusDashboard();
+    }
+
+    initDashboard();
+    window.addEventListener("storage", () => { updateDashboardStats(); updateCharts(); updateReportStatusDashboard(); });
     document.getElementById("sidebarToggle")?.addEventListener("click", () =>
         document.querySelector(".app-sidebar").classList.toggle("show")
     );
@@ -354,7 +412,8 @@ section.mt-4{
 if(window.PRDMSAuth){document.querySelectorAll(".admin-only").forEach(el=>{if(!PRDMSAuth.isAdmin())el.style.display="none"});}
 <script>
 function updateReportStatusDashboard(){
-  let reports=[];try{reports=JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY")||"[]")}catch(e){}
+  let reports=Array.isArray(window.__PDRMS_DASHBOARD_REPORTS__) ? window.__PDRMS_DASHBOARD_REPORTS__ : [];
+  if(!reports.length){try{reports=JSON.parse(localStorage.getItem("PRDMS_REPORT_HISTORY")||"[]")}catch(e){reports=[]}}
   const counts={Draft:0,"In Progress":0,Completed:0,Closed:0};
   reports.forEach(r=>counts[r.reportStatus||"Draft"]=(counts[r.reportStatus||"Draft"]||0)+1);
   const map={Draft:"statusDraft","In Progress":"statusProgress",Completed:"statusCompleted",Closed:"statusClosed"};

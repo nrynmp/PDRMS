@@ -1,0 +1,24 @@
+let all=[];
+function allowed(){const u=PRDMSAuth.current();const c=PDRMS_COMPANIES[u?.companyId||u?.id];return c?c.aliases.map(x=>x.toUpperCase()):[]}
+function dateOK(r){const d=String(reportDate(r)||'').slice(0,10);const f=document.getElementById('fromDate')?.value,t=document.getElementById('toDate')?.value;return (!f||d>=f)&&(!t||d<=t)}
+function clearFilters(){trainSearch.value='';fromDate.value='';toDate.value='';render()}
+function num(v){return Number(v||0)}
+function reportDamaged(r){return damagedWagonCount(r)}
+function reportHours(r){return num(r.totalManHours||r.manHours||r.totalHours||r.manpowerHours||r.totalManpower)}
+function defectTotals(list){const x={};list.forEach(r=>(r.wagons||[]).forEach(w=>wagonDamages(w,r).forEach(d=>x[d.k]=(x[d.k]||0)+num(d.v))));return x}
+function uniqueWagons(list){return new Set(list.flatMap(r=>(r.wagons||[]).map(w=>String(w.wagonNo||w.wagonNumber||'').trim()).filter(Boolean))).size}
+function openTrainProfile(i){const r=all[i];if(!r)return;location.href='train-passport.html?train='+encodeURIComponent(r.trainNo||'')}
+function showReportSummary(i){const r=all[i];if(!r)return;const d=reportDamaged(r), totalHours=reportHours(r);alert(`REPORT SUMMARY\n\nTrain No: ${r.trainNo||'—'}\nDate: ${reportDate(r)||'—'}\nOwner: ${reportOwner(r)||'—'}\nDamaged Wagons Recorded: ${d}\nTotal Manhours: ${totalHours||'Not calculated/saved yet'}\n\nThis report is read-only.`)}
+async function render(){
+ const q=document.getElementById('trainSearch')?.value.trim(); const aliases=allowed();
+ const list=all.filter(r=>aliases.includes(reportOwner(r))&&dateOK(r)&&(!q||String(r.trainNo||'').toLowerCase().includes(q.toLowerCase())));
+ const damaged=list.reduce((n,r)=>n+reportDamaged(r),0), hours=list.reduce((n,r)=>n+reportHours(r),0), defs=defectTotals(list), top=Object.entries(defs).sort((a,b)=>b[1]-a[1])[0]?.[0]||'No damage data';
+ document.getElementById('stats').innerHTML=[['Total Reports',list.length,'📄'],['Total Damaged Wagons',damaged,'⚠️'],['Unique Wagons Recorded',uniqueWagons(list),'🚃'],['Most Common Damage',top,'🔧'],['Total Manhours',hours?hours.toFixed(2):'Not Available','👷']].map(x=>`<div class="col-md col-6"><div class="intel-stat"><span>${x[2]}</span><strong>${esc(x[1])}</strong><small>${x[0]}</small></div></div>`).join('');
+ document.getElementById('resultCount').textContent=list.length+' report(s)';
+ document.getElementById('rows').innerHTML=list.sort((a,b)=>String(reportDate(b)).localeCompare(String(reportDate(a)))).map(r=>{const idx=all.indexOf(r);return `<tr><td>${esc(reportDate(r))}</td><td><b>${esc(r.trainNo)}</b></td><td>${esc(reportOwner(r))}</td><td>${reportDamaged(r)}</td><td><button class="btn btn-sm btn-outline-primary" onclick="showReportSummary(${idx})">Summary</button></td><td><button class="btn btn-sm btn-primary" onclick="openTrainProfile(${idx})">Profile</button></td></tr>`}).join('')||'<tr><td colspan="6" class="text-center text-muted py-4">No reports found for this search.</td></tr>';
+ const monthly={};list.forEach(r=>{const k=String(reportDate(r)||'Unknown').slice(0,7);monthly[k]=monthly[k]||{r:0,d:0};monthly[k].r++;monthly[k].d+=reportDamaged(r)});
+ document.getElementById('monthlyTrend').innerHTML=Object.entries(monthly).sort().slice(-12).map(([k,v])=>`<div class="trend-row"><span>${esc(k)}</span><div class="trend-bars"><i style="width:${Math.min(100,v.r*10)}%"></i><em style="width:${Math.min(100,v.d*10)}%"></em></div><b>${v.r} reports • ${v.d} damaged</b></div>`).join('')||'<p class="text-muted">No trend data available.</p>';
+ document.getElementById('damageAnalysis').innerHTML=Object.entries(defs).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k,v])=>`<div class="rank-line"><span>${esc(k)}</span><b>${v}</b></div>`).join('')||'<p class="text-muted">No repair/damage quantities available.</p>';
+}
+(async()=>{seedCompanyAccounts();const u=PRDMSAuth.current();if(!u||u.role!=='Company'){companyLogin.classList.remove('d-none');companyApp.classList.add('d-none');return}companyLogin.classList.add('d-none');companyApp.classList.remove('d-none');const c=PDRMS_COMPANIES[u.companyId||u.id];document.getElementById('companyTitle').textContent=`${c?.name||u.name} Damage History`;document.getElementById('historyTitle').textContent=`${c?.name||u.name} Damage History`;document.getElementById('companySubtitle').textContent='Secure company intelligence • Read-only operational access';document.getElementById('lastUpdated').textContent=new Date().toLocaleString();all=await portalReports();render()})();
+document.getElementById('companyLoginForm')?.addEventListener('submit',e=>{e.preventDefault();seedCompanyAccounts();const r=PRDMSAuth.login(companyUserId.value,companyPassword.value);if(!r.ok||r.user.role!=='Company'){if(r.ok)PRDMSAuth.logout();companyLoginError.textContent='Invalid company credentials.';companyLoginError.classList.remove('d-none');return}location.reload()});
