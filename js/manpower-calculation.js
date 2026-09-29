@@ -99,10 +99,19 @@ function resolveManpowerMapping(column) {
 
 function chooseMasterCategory(masterItem, columnName) {
     const n = normalise(columnName);
-    if (/\b(repair|repaired|weld|welded|straight|twist)\b/.test(n) && masterItem.repair != null) return 'Repair';
-    if (/\b(change|changed|change[d]?|fitted|fit|replace|replaced|pin|piece|spring)\b/.test(n) && masterItem.changed != null) return 'Changed';
+
+    // Action words take priority over component names.  In particular,
+    // "ELB C LINK STRAIGHT/TWIST ROD fitted" is a Changed/Fitted item;
+    // "straight" or "twist" by itself must never force it into Repair.
+    if (/\b(change|changed|fitted|fit|replace|replaced)\b/.test(n) && masterItem.changed != null) {
+        return 'Changed';
+    }
+    if (/\b(repair|repaired|weld|welded)\b/.test(n) && masterItem.repair != null) {
+        return 'Repair';
+    }
     if (masterItem.changed != null && masterItem.repair == null) return 'Changed';
     if (masterItem.repair != null && masterItem.changed == null) return 'Repair';
+
     // If both rates exist and wording is neutral, preserve the safer existing
     // convention: a normal repair column uses Repair.
     return masterItem.repair != null ? 'Repair' : 'Changed';
@@ -255,7 +264,11 @@ function getQuantity(wagon, column) {
 function getAllReportColumns(wagons) {
     const result = [];
     const add = c => {
-        if (!c || result.includes(c)) return;
+        if (!c) return;
+        // Prevent case-only duplicates such as "ELB Straight Rod fitted"
+        // and "ELB Straight rod fitted" from becoming two print columns.
+        const key = normalise(c);
+        if (result.some(existing => normalise(existing) === key)) return;
         result.push(c);
     };
     (Array.isArray(currentReport?.repairColumns) ? currentReport.repairColumns : []).forEach(add);
@@ -419,39 +432,43 @@ function getOfficialPrintColumns(wagons) {
 
     // Keep the official departmental order for the standard items, then append
     // every additional populated Repair Column in the order it was saved.
-    // Official print format: always keep a minimum of 3 Repair and 3 Changed
-    // columns, matching the departmental damage-report layout. Additional
-    // columns are appended when they are actually used. Empty columns print 0.
-    const repairDefaults = [
-        "Door Repair",
-        "Panel Repair",
-        "Lock Lifter Handle Repair"
+    const officialOrder = [
+        "Door Repair", "Panel Repair", "Lock Lifter Handle Repair", "K/Pin Fitted",
+        "Floor Fitted", "Side Frame Key with Nut & Bolt Fitted",
+        "Lock Lifter Handle Change", "CBC Operating Handle (LLH) Change",
+        "Panel Fitted"
     ];
-    const changedDefaults = [
-        "Lock Lifter Handle Change",
-        "K/Pin Fitted",
-        "Side Frame Key with Nut & Bolt Fitted"
-    ];
-    // Always start with the departmental minimum: 3 Repair + 3 Changed.
-    // Do NOT require a quantity for these standard columns; they must print
-    // even when their quantity is zero/blank.
-    const selected = [...new Set([...repairDefaults, ...changedDefaults])];
-
-    // Additional columns are appended only when they are actually used/selected.
-    const addUsed = c => {
+    const selected = [];
+    const add = c => {
         if (!c || selected.includes(c)) return;
-        if (actual.includes(c) || wagons.some(w => getQuantity(w, c) > 0)) {
-            selected.push(c);
-        }
+        if (actual.includes(c) || wagons.some(w => getQuantity(w, c) > 0)) selected.push(c);
     };
+    officialOrder.forEach(add);
+    actual.forEach(add);
 
-    // Preserve any additional columns used/selected in the report.
-    actual.forEach(addUsed);
+    // Preserve the six-column minimum only when fewer than six real items exist.
+    // Once six or more real items exist, print all real items and nothing else.
+    const populated = selected.filter(c => wagons.some(w => getQuantity(w, c) > 0));
+    if (populated.length >= 6) return populated;
 
-    // Also include any dynamically-used column not present in calculation.columns.
-    wagons.forEach(w => Object.keys(w?.repairs || {}).forEach(addUsed));
+    const result = [...populated];
+    for (const c of selected) {
+        if (result.length >= 6) break;
+        if (!result.includes(c)) result.push(c);
+    }
+    return result;
+}
 
-    return selected;
+function printMapping(column) {
+    const item = calculation?.wagonRows
+        ?.flatMap(row => row.items || [])
+        ?.find(x => x.column === column && x.mapping)?.mapping;
+    return item || resolveManpowerMapping(column) || {
+        item: column,
+        category: /repair|repaired|weld/i.test(String(column)) ? "Repair" : "Changed",
+        print: column,
+        group: /repair|repaired|weld/i.test(String(column)) ? "repaired" : "changed"
+    };
 }
 
 function printMapping(column) {
@@ -500,8 +517,8 @@ function renderOfficialPrint() {
             ${changedGroup}
         </tr>
         <tr class="item-header">
-            ${repairedHeaders}
-            ${changedHeaders}
+            ${repaired.length ? repaired.map(c => `<th>${escapeHtml(printMapping(c).print || c)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
+            ${changed.length ? changed.map(c => `<th>${escapeHtml(printMapping(c).print || c)}</th>`).join("") : '<th class="blank-group-column">&nbsp;</th>'}
         </tr>`;
 
     body.innerHTML = calculation.wagonRows.map((row, index) => {

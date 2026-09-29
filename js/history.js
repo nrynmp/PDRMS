@@ -18,11 +18,18 @@ function writeHistory(list) {
 }
 
 function makeReportId(report) {
-    return report.reportId || (
-        String(report.trainNo || "REPORT") + "_" +
-        String(report.reportDate || "") + "_" +
-        String(report.savedAt || Date.now())
-    );
+    if (report.reportId) return report.reportId;
+
+    // One report is maintained for one Train No. + Report Date.
+    // This keeps Save Progress, Save & Print and Save & Exit on the
+    // same report instead of creating timestamp-based duplicates.
+    const train = String(report.trainNo || "REPORT")
+        .trim()
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "") || "REPORT";
+    const date = String(report.reportDate || "").trim() || "NO_DATE";
+    return `PDRMS_${date}_${train}`;
 }
 
 function archiveReport(report) {
@@ -486,11 +493,49 @@ async function historySaveReport(report, existingId) {
     const data = report || {};
     if (existingId) data.reportId = existingId;
 
-    const list = readHistory();
+    let list = readHistory();
+
+    // If this is a new action on the same Train No. + Date, automatically
+    // continue the existing report instead of creating another history row.
+    if (!data.reportId) {
+        const train = String(data.trainNo || "").trim().toUpperCase();
+        const date = String(data.reportDate || "").trim();
+        if (train && date) {
+            const sameReport = list.find(r =>
+                String(r.trainNo || "").trim().toUpperCase() === train &&
+                String(r.reportDate || "").trim() === date
+            );
+            if (sameReport?.reportId) data.reportId = sameReport.reportId;
+        }
+    }
+
+    // On a fresh device, local history may not yet contain the shared report.
+    // Check the central database before creating a new ID.
+    if (!data.reportId && window.PRDMSCloud?.getReports) {
+        try {
+            const shared = await window.PRDMSCloud.getReports();
+            const train = String(data.trainNo || "").trim().toUpperCase();
+            const date = String(data.reportDate || "").trim();
+            const sameShared = Array.isArray(shared) ? shared.find(r =>
+                String(r.trainNo || "").trim().toUpperCase() === train &&
+                String(r.reportDate || "").trim() === date
+            ) : null;
+            if (sameShared?.reportId) {
+                data.reportId = sameShared.reportId;
+                list = readHistory();
+            }
+        } catch (error) {
+            console.warn("Unable to check central reports before save; continuing with local history.", error);
+        }
+    }
+
     const index = data.reportId ? list.findIndex(r => r.reportId === data.reportId) : -1;
 
     if (index >= 0) {
         const previous = list[index];
+        // Keep the original report identity/reference when the same
+        // Train No. + Date is saved again.
+        data.reportReference = previous.reportReference || data.reportReference;
         data.reportStatus = previous.reportStatus || data.reportStatus || "Draft";
         data.createdBy = previous.createdBy || data.createdBy;
         data.createdById = previous.createdById || data.createdById;
@@ -628,11 +673,13 @@ function showDuplicateReportDialog(report) {
 }
 
 async function preventDuplicateBeforeSave(reportData, existingId = "") {
+    // Same Train No. + Date is intentionally the same report.  Saving,
+    // printing or exiting should update that existing record.
     const duplicate = findDuplicateReport(reportData, existingId || reportData?.reportId || "");
-    if (!duplicate) return true;
-
-    const action = await showDuplicateReportDialog(duplicate);
-    return action === "save";
+    if (duplicate?.reportId && !existingId && !reportData?.reportId) {
+        reportData.reportId = duplicate.reportId;
+    }
+    return true;
 }
 
 /* Central draft save: keep Save Progress shared across computers. */
